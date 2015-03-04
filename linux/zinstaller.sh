@@ -4,11 +4,11 @@
 # description:		Pinguino IDE Installation Script
 # author:			regis blanchot <rblanchot@gmail.com>
 # first release:	25-04-2014
-# last release:		02-03-2015
+# last release:		04-03-2015
 # ----------------------------------------------------------------------
 
 DOWNLOAD=1
-INSTALL=
+INSTALL=1
 INTERFACE=
 
 DLDIR=https://sourceforge.net/projects/pinguinoide/files/linux/
@@ -56,7 +56,7 @@ zenity  --question \
 <span color=\"red\"><b><big>Pinguino IDE Installer</big></b></span>
 <span>Author:\tRégis Blanchot</span>
 <span>Contact:\trblanchot@pinguino.cc</span>
-<span>Version:\t20150219</span>
+<span>Version:\t04-03-2015</span>
 <span>Host:\t<b>${ARCHTXT}</b></span>
 
 <span>Do you want to proceed ?</span>"
@@ -176,16 +176,14 @@ fi
 
 #5 - END
 
-zenity  --info \
-        --height=250 --width=400 \
-        --title="Pinguino IDE Installer" \
-        --text ""
+wget --quiet --timestamping ${DLDIR}/changelog 
 
-zenity  --question \
+if zenity  --question \
         --height=250 --width=400 \
         --title="Pinguino IDE Installer" \
+        --filename="changelog" \
         --text="Installation complete.\n\rDo you want to launch the IDE ?"
-
-if [ $? == 0 ]; then
+then
     python /usr/share/pinguino-11/pinguino.py
 fi
+
