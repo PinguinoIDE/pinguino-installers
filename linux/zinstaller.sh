@@ -9,7 +9,7 @@
 
 DOWNLOAD=1
 INSTALL=1
-INTERFACE=
+INTERFACE=1
 
 DLDIR=https://sourceforge.net/projects/pinguinoide/files/linux/
 
@@ -19,8 +19,12 @@ function fetch {
     zenity  --progress \
             --title="Pinguino IDE Installer" \
             --text="Checking and downloading $1 package" \
-            --height=250 --width=400 \
-            --auto-close
+            --height=250 --width=500 \
+            --pulsate --auto-close
+    echo $?
+    if [ $? == 1 ]; then
+        exit 0
+    fi
 }
 
 # Install DEB package
@@ -29,12 +33,30 @@ function install {
     zenity  --progress \
             --title="Pinguino IDE Installer" \
             --text="Installing $1 package" \
-            --height=250 --width=400 \
-            --auto-close
+            --height=250 --width=500 \
+            --pulsate --auto-close
+    echo $?
+    if [ $? == 1 ]; then
+        exit 0
+    fi
     sudo apt-get install -f > /dev/null
 }
 
-#0 - ARCHITECTURE
+# ROOT ?
+
+if [[ $EUID -ne 0 ]]; then
+    zenity  --warning \
+            --height=250 --width=500 \
+            --title="Pinguino IDE Installer" \
+            --text "
+            <span color=\"red\"><b><big>This script must be run as root :</big></b></span>
+            
+            
+            <span><b>sudo ./zinstaller.sh</b></span>"
+   exit 1
+fi
+
+# ARCHITECTURE
 
 if [ `uname -m` == "armv6l" ]; then
     ARCH=RPi
@@ -47,30 +69,43 @@ else
     ARCHTXT="${ARCH}-bit GNU/Linux."
 fi
 
-#1 - TITLE
+# PROCEED ?
 
 zenity  --question \
-        --height=250 --width=400 \
+        --height=250 --width=500 \
         --title="Pinguino IDE Installer" \
-        --text "\
-<span color=\"red\"><b><big>Pinguino IDE Installer</big></b></span>
-<span>Author:\tRégis Blanchot</span>
-<span>Contact:\trblanchot@pinguino.cc</span>
-<span>Version:\t04-03-2015</span>
-<span>Host:\t<b>${ARCHTXT}</b></span>
+        --text "
+        <span color=\"red\"><b><big>Pinguino IDE Installer</big></b></span>
 
-<span>Do you want to proceed ?</span>"
+        <span>Author:\tRégis Blanchot</span>
+        <span>Contact:\trblanchot@pinguino.cc</span>
+        <span>Version:\t20150304</span>
+        <span>Host:\t<b>${ARCHTXT}</b></span>
+
+        <span>Do you want to proceed ?</span>"
 
 if [ $? == 1 ]; then
     exit 0
 fi
 
-#2 - DOWNLOAD COMPILERS
+wget --quiet --timestamping https://sourceforge.net/projects/pinguinoide/files/changelog 
+
+zenity  --text-info \
+        --height=600 --width=800 \
+        --title="Pinguino IDE Installer" \
+        --filename="changelog" \
+        --checkbox="Do you still want to proceed ?"
+
+if [ $? == 1 ]; then
+    exit 0
+fi
+
+# DOWNLOAD COMPILERS
 
 if [ $ARCH == RPi ]; then
 
     zenity  --question \
-            --height=250 --width=400 \
+            --height=250 --width=500 \
             --title="Pinguino IDE Installer" \
             --text="Do you want to install the 8-bit compiler ?"
 
@@ -83,16 +118,14 @@ else
 
     zenity  --list \
             --title="Pinguino IDE Installer" \
-            --height=250 --width=400 \
+            --height=250 --width=500 \
             --radiolist \
-            --text "What compiler(s) do you want to install ?" \
+            --text "Which compiler(s) do you want to install ?" \
             --column "Select..." --column 'Compiler(s)' \
     TRUE "none of them" \
     FALSE "the  8-bit (PIC18F)  compiler only" \
     FALSE "the 32-bit (PIC32MX) compiler only" \
     FALSE "both 8- and 32-bit compilers"
-
-echo $?
 
     case $? in
         0) C8=NO  C32=NO  ;;
@@ -103,18 +136,18 @@ echo $?
 
 fi
 
-#2 - DOWNLOAD INTERFACE
+# DOWNLOAD INTERFACE
 
 if [ ${INTERFACE} ]; then
 
     zenity  --list \
             --title="Pinguino IDE Installer" \
-            --height=250 --width=400 \
+            --height=250 --width=500 \
             --radiolist \
-            --text "Which graphic interface do you want to install ?" \
+            --text "Which graphical interface do you want to install ?" \
             --column "Select..." --column 'Interface' \
-    TRUE "Tkinter-based IDE (simple and light)" \
-    FALSE "Qt4-based IDE (default)"
+    FALSE "Tkinter-based IDE (simple and light)" \
+    TRUE "Qt4-based IDE"
 
     case $? in
         1) TK=YES ;;
@@ -147,7 +180,7 @@ if [ ${DOWNLOAD} ]; then
 
 fi
 
-#3 - INSTALL
+# INSTALL
 
 if [ ${INSTALL} ]; then
 
@@ -167,21 +200,17 @@ if [ ${INSTALL} ]; then
         install pinguino-ide
     fi
 
-#4 - POSTINSTALL
+# POSTINSTALL
 
 python /usr/share/pinguino-11/post_install.py
 
 fi
 
-
-#5 - END
-
-wget --quiet --timestamping ${DLDIR}/changelog 
+# END
 
 if zenity  --question \
-        --height=250 --width=400 \
+        --height=250 --width=500 \
         --title="Pinguino IDE Installer" \
-        --filename="changelog" \
         --text="Installation complete.\n\rDo you want to launch the IDE ?"
 then
     python /usr/share/pinguino-11/pinguino.py
