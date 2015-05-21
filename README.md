@@ -32,5 +32,5 @@ sudo ./installer.sh
 ### Execution
 Excecute Pinguino-IDE with  
 ```shell
-python pinguino.py
+pinguino
 ```

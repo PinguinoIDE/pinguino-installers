@@ -23,7 +23,14 @@ else
     echo "Homebrew installed: updating"
     brew update
 fi
-# TODO: Check for brew doctor messages
+
+# Check for brew doctor messages
+if [ `brew doctor` = "Your system is ready to brew." ] ; then
+    echo "Homebrew is up and ready... "
+else
+    echo "Homebrew seems to be sick run brew doctor and fix your problems, then come back."
+    exit 2
+fi
 
 brew install python
 brew install pyside sdcc
@@ -40,7 +47,4 @@ cd ~/.pinguino
 
 sudo ln -sfv /p8 /usr/share/pinguino-11/
 sudo ln -sfv ~/.pinguino/p8/bin/sdcc /usr/bin/sdcc
-
-#Change paths.cfg
-#install_path = ~/.pinguino
-#user_path = ~/.pinguino
+sudo ln -sfv ~/.pinguino/pinguino.py /usr/local/bin/pinguino
