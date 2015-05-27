@@ -8,6 +8,7 @@ Please install Xcode and continue with this script"
     exit -1
 fi
 
+# Check for git
 if [ `git --version` = "-bash: git: command not found" ] ; then
     echo "Installing developer tools..."
     xcode-select --install
@@ -32,19 +33,30 @@ else
     exit 2
 fi
 
+# Install python, python QT libraries and compiler
 brew install python
 brew install pyside sdcc
 
+# Install python packages
 pip install gitpython hgapi beautifulsoup4 pyusb
 
+# Create pinguino directory in home folder
 [ ! -d ~/.pinguino ] && mkdir -pv ~/.pinguino
 [ ! -d /usr/share/pinguino-11 ] && sudo mkdir -pv /usr/share/pinguino-11
 
+# Get the basic pinguino IDE
 git clone https://github.com/PinguinoIDE/pinguino-ide.git ~/.pinguino
-git clone https://github.com/PinguinoIDE/pinguino-libraries.git ~/.pinguino
 
+# Get the libraries
 cd ~/.pinguino
+wget --no-check-certificate https://github.com/PinguinoIDE/pinguino-libraries/archive/master.zip
+unzip master.zip -d ~/.pinguino
+rm master.zip
 
+# Copy the libraries to pinguino main folder
+cp -a ~/.pinguino/pinguino-libraries-master/p* ~/.pinguino
+
+# Link the binaries to /usr folder
 sudo ln -sfv /p8 /usr/share/pinguino-11/
 sudo ln -sfv ~/.pinguino/p8/bin/sdcc /usr/bin/sdcc
 sudo ln -sfv ~/.pinguino/pinguino.py /usr/local/bin/pinguino
