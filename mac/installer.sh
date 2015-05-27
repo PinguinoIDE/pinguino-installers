@@ -44,11 +44,13 @@ pip install gitpython hgapi beautifulsoup4 pyusb
 [ ! -d ~/.pinguino ] && mkdir -pv ~/.pinguino
 [ ! -d /usr/share/pinguino-11 ] && sudo mkdir -pv /usr/share/pinguino-11
 
+# Go to Pinguino folder
+cd ~/.pinguino
+
 # Get the basic pinguino IDE
 git clone https://github.com/PinguinoIDE/pinguino-ide.git ~/.pinguino
 
 # Get the libraries
-cd ~/.pinguino
 wget --no-check-certificate https://github.com/PinguinoIDE/pinguino-libraries/archive/master.zip
 unzip master.zip -d ~/.pinguino
 rm master.zip
