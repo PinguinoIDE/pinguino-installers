@@ -61,4 +61,4 @@ cp -a ~/.pinguino/pinguino-libraries-master/p* ~/.pinguino
 # Link the binaries to /usr folder
 sudo ln -sfv /p8 /usr/share/pinguino-11/
 sudo ln -sfv ~/.pinguino/p8/bin/sdcc /usr/bin/sdcc
-sudo ln -sfv ~/.pinguino/pinguino.py /usr/local/bin/pinguino
+alias pinguino='python ~/.pinguino/pinguino.py'
