@@ -59,8 +59,8 @@ rm master.zip
 cp -a ~/.pinguino/pinguino-libraries-master/p* ~/.pinguino
 
 # Link the binaries to /usr folder
-sudo ln -sfv /p8 /usr/share/pinguino-11/
-sudo ln -sfv ~/.pinguino/p8/bin/sdcc /usr/bin/sdcc
+sudo cp -aR p8 /usr/share/pinguino-11/
+sudo ln -sfv /usr/local/bin/sdcc /usr/bin/sdcc
 # Check if alias exits in ~/.bash_profile
 if grep -q "alias pinguino" ~/.bash_profile|wc -l
 then
