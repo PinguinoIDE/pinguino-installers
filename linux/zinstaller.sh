@@ -51,6 +51,9 @@ function install {
 if [ `uname -m` == "armv6l" ]; then
     ARCH=RPi
     ARCHTXT="Raspberry Pi"
+elif [ `uname -m` == "armv7l" ]; then
+    ARCH=RPi
+    ARCHTXT="Raspberry Pi 2"
 elif [ `uname -m` == "x86_64" ]; then
     ARCH=64
     ARCHTXT="${ARCH}-bit GNU/Linux."
