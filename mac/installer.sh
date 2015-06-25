@@ -67,5 +67,6 @@ then
     echo "Instalation successful, you can run pinguino-IDE with command 'pinguino'."
 else
     echo "alias pinguino='python ~/.pinguino/pinguino.py'" >> ~/.bash_profile
+    source ~/.bash_profile
     echo "Instalation successful, you can run pinguino-IDE with command 'pinguino'."
 fi
