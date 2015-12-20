@@ -1,36 +1,20 @@
 # pinguino-installers
 Installation scripts for the Pinguino IDE
 
-## GNU/Linux
-`installer.sh`: Basic shell script to install the Pinguino IDE
+<b>GNU/Linux</b>
+<hr>
+<p><b>installer.sh</b>  : Basic shell script to install the Pinguino IDE</p>
+<p><b>zinstaller.sh</b> : Graphic (based on GTK+/Zenity) shell script to install the Pinguino IDE</p>
+<p>Make the script executable with : <b>sudo chmod +x installer.sh</b> or <b>sudo chmod +x zinstaller.sh</b></p>
+<p>Launch the script with : <b>sudo ./installer.sh</b> or <b>sudo ./zinstaller.sh</b></p>
 
-`zinstaller.sh`: Graphic (based on GTK+/Zenity) shell script to install the Pinguino IDE
+<b>Windows</b>
+<hr>
+<p>See https://github.com/MefhigosetH/pinguino-nsi-installer</p>
 
-Make the script executable with:
-`sudo chmod +x installer.sh` or `sudo chmod +x zinstaller.sh`
+<b>Mac OS X</b>
+<hr>
+<p><b>installer.sh</b>  : Basic shell script to install the Pinguino IDE</p>
+<p>Make the script executable with : <b>sudo chmod +x installer.sh</b></p>
+<p>Launch the script with : <b>sudo ./installer.sh</b></p>
 
-Launch the script with: `sudo ./installer.sh` or `sudo ./zinstaller.sh`
-
-## Windows
-See [https://github.com/MefhigosetH/pinguino-nsi-installer](https://github.com/MefhigosetH/pinguino-nsi-installer)
-
-## Mac OS X
-
-### Requirements
-- Xcode
-- developer tools
-
-### Installation
-Make the script executable with:
-```shell
-sudo chmod +x installer.sh
-```
-Launch the script with:
-```shell
-sudo ./installer.sh
-```
-### Execution
-Excecute Pinguino-IDE with  
-```shell
-pinguino
-```
