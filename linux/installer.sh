@@ -108,7 +108,7 @@ log $NORMAL ---------------------------------------------------------------
 if [ `uname -m` == "armv6l" ]; then
     ARCH=RPi
     log $NORMAL "Host is a Raspberry Pi."
-if [ `uname -m` == "armv7l" ]; then
+elif [ `uname -m` == "armv7l" ]; then
     ARCH=RPi
     log $NORMAL "Host is a Raspberry Pi 2."
 elif [ `uname -m` == "x86_64" ]; then
