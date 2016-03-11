@@ -4,22 +4,27 @@
 # description:		Pinguino IDE Install Script
 # author:			regis blanchot <rblanchot@gmail.com>
 # first release:	25-04-2014
-# last release:		21-01-2014
 # ----------------------------------------------------------------------
 # TODO
 # ----------------------------------------------------------------------
-# zenity GUI
-# ----------------------------------------------------------------------
+
+UPDATE=09-03-2016
 
 DOWNLOAD=1
 INSTALL=1
 INTERFACE=
+RELEASE=1
+STABLE=11
+TESTING=12
 
+# Pinguino Sourceforge location
 DLDIR=https://sourceforge.net/projects/pinguinoide/files/linux/
-#DLDIR=http://optimate.dl.sourceforge.net/project/pinguinoide/linux
-#DLDIR=http://master.dl.sourceforge.net/project/pinguinoide/linux
-#DLDIR=http://skylink.dl.sourceforge.net/project/pinguinoide/linux
-#DLDIR=http://softlayer-ams.dl.sourceforge.net/project/pinguinoide/linux
+XC8DLDIR=http://www.microchip.com/mplabxc8linux/
+
+# Compilers code
+SDCC=1
+XC8=2
+GCC=3
 
 # ANSI Escape Sequences
 RED='\e[31;1m'
@@ -37,6 +42,11 @@ END=${TERM}
 # Log a message out to the console
 function log {
     echo -e $1"$*"$TERM
+}
+
+# Carriage return
+function println {
+    echo -e "\r\n"
 }
 
 # Progress-bar, author: Dotan Barak
@@ -83,6 +93,17 @@ function fetch {
     echo -en "\r"
 }
 
+# Download a package from Microchip MPLAB site
+function fetch2 {
+    #log $NORMAL "Downloading $1 package"
+    wget --quiet --timestamping ${XC8DLDIR}/$1.deb
+    let "RFETCH=$RFETCH + $?"
+    let "i=$i + $STEP"
+    progress_bar ${BAR_WIDTH} ${i}
+    echo -en "\r"
+}
+
+# Install a package
 function install {
     #log $NORMAL "Installing $1 package"
     #sudo dpkg -r $1.deb
@@ -94,21 +115,46 @@ function install {
     echo -en "\r"
 }
 
-#0 - TITLE
+# Install a package
+function install2 {
+    #log $NORMAL "Installing $1 package"
+    #sudo dpkg -r $1.deb
+    #sudo dpkg -P $1.deb
+    sudo ./$1 > /dev/null
+    let "i=$i + $STEP"
+    progress_bar ${BAR_WIDTH} ${i}
+    echo -en "\r"
+}
+
+# TITLE
+########################################################################
 
 log $CLS
 log $NORMAL ---------------------------------------------------------------
 log $NORMAL Pinguino IDE Installation Script
 log $NORMAL Regis Blanchot - rblanchot@pinguino.cc
-log $NORMAL Last update 16-12-2014
+log $NORMAL Last update ${UPDATE}
 log $NORMAL ---------------------------------------------------------------
 
-#1 - ARCHITECTURE
+# ADMIN
+########################################################################
+
+user=`env | grep '^USER=' | sed 's/^USER=//'`
+if [ "$user" != "root" -a "$UID" != "0" ]; then
+    log $ERROR "The installer needs to be run as root"
+    println
+    exit 1
+else
+    log $NORMAL "The installer has admin rights"
+fi
+
+# ARCHITECTURE
+########################################################################
 
 if [ `uname -m` == "armv6l" ]; then
     ARCH=RPi
     log $NORMAL "Host is a Raspberry Pi."
-if [ `uname -m` == "armv7l" ]; then
+elif [ `uname -m` == "armv7l" ]; then
     ARCH=RPi
     log $NORMAL "Host is a Raspberry Pi 2."
 elif [ `uname -m` == "x86_64" ]; then
@@ -119,7 +165,35 @@ else
     log $NORMAL "Host is a ${ARCH}-bit GNU/Linux."
 fi
 
-#2 - DOWNLOAD
+# RELEASE
+########################################################################
+
+if [ ${RELEASE} ]; then
+
+    log $NORMAL "Which release of Pinguino do you want to install ?"
+    log $WARNING "1) Stable  (default)"
+    log $WARNING "2) Testing"
+
+    echo -e -n "\e[31;1m >\e[05m"
+    read what
+    echo -e -n "\e[00m"
+
+    case $what in
+        2) REL=testing ;;
+        *) REL=stable  ;;
+    esac
+
+else
+
+    REL=stable
+
+fi
+
+mkdir -p ${REL}
+cd ${REL}
+
+# DOWNLOAD
+########################################################################
 
 if [ $ARCH == RPi ]; then
     log $NORMAL "Host memory is too limited for 32-bit compiler."
@@ -129,9 +203,11 @@ if [ $ARCH == RPi ]; then
 else
     log $NORMAL "What compiler(s) do you want to install ?"
     log $WARNING "1) none of them (default)"
-    log $WARNING "2) the  8-bit (PIC18F)  compiler only"
-    log $WARNING "3) the 32-bit (PIC32MX) compiler only"
-    log $WARNING "4) both 8- and 32-bit compilers"
+    log $WARNING "2) SDCC (PIC18F) only"
+    log $WARNING "3) XC8 (PIC16F and PIC18F) only"
+    log $WARNING "4) GCC (PIC32MX) only"
+    log $WARNING "5) SDCC and XC8 (PIC16F and PIC18F) only"
+    log $WARNING "6) all (SDCC, XC8 and GCC)"
 fi
 
 echo -e -n "\e[31;1m >\e[05m"
@@ -139,26 +215,23 @@ read what
 echo -e -n "\e[00m"
 
 case $what in
-    2)
-        C8=YES
-        C32=NO
-        STEP=33
-        ;;
+    2)  COMP=$SDCC
+        STEP=33 ;;
     3)
-        C8=NO
-        C32=YES
-        STEP=33
-        ;;
+        COMP=$XC8
+        STEP=33 ;;
     4)
-        C8=YES
-        C32=YES
-        STEP=25
-        ;;
+        COMP=$GCC
+        STEP=33 ;;
+    5)
+        COMP=$((SDCC|XC8))
+        STEP=25 ;;
+    6)
+        COMP=$((SDCC|XC8|GCC))
+        STEP=20 ;;
     *)
-        C8=NO
-        C32=NO
-        STEP=50
-        ;;
+        COMP=0
+        STEP=50 ;;
 esac
 
 if [ ${INTERFACE} ]; then
@@ -169,12 +242,8 @@ if [ ${INTERFACE} ]; then
     read what
 
     case $what in
-        1)
-            TK=YES
-            ;;
-        *)
-            TK=NO
-            ;;
+        1) TK=YES ;;
+        *) TK=NO  ;;
     esac
 
 else
@@ -191,18 +260,22 @@ if [ ${DOWNLOAD} ]; then
     RFETCH=0
     
     if [ $TK == YES ]; then
-        fetch pinguino-ide-tk
+        fetch ${REL}/pinguino-ide-tk
     else
-        fetch pinguino-ide
+        fetch ${REL}/pinguino-ide
     fi
     
-    fetch pinguino-libraries
+    fetch ${REL}/pinguino-libraries
 
-    if [ $C8 == YES ]; then
+    if [ $((COMP & SDCC)) ]; then
         fetch pinguino-linux${ARCH}-sdcc-mpic16
     fi
 
-    if [ $C32 == YES ]; then
+    if [ $((COMP & XC8)) ]; then
+        fetch2 xc8-v1.36-full-install-linux-installer.run
+    fi
+
+    if [ $((COMP & GCC)) ]; then
         fetch pinguino-linux${ARCH}-gcc-mips-elf
     fi
 
@@ -210,11 +283,12 @@ if [ ${DOWNLOAD} ]; then
         log $ERROR "Error"
     fi
 
-    echo -e "\r\n"
+    println
 
 fi
 
-#3 - INSTALL
+# INSTALL
+########################################################################
 
 if [ ${INSTALL} ]; then
 
@@ -223,11 +297,15 @@ if [ ${INSTALL} ]; then
     i=0
     RINST=0
 
-    if [ $C8 == YES ]; then
+    if [ $((COMP & SDCC)) ]; then
         install pinguino-linux${ARCH}-sdcc-mpic16
     fi
 
-    if [ $C32 == YES ]; then
+    if [ $((COMP & XC8)) ]; then
+        install2 xc8-v1.36-full-install-linux-installer.run
+    fi
+
+    if [ $((COMP & GCC)) ]; then
         install pinguino-linux${ARCH}-gcc-mips-elf
     fi
 
@@ -243,14 +321,36 @@ if [ ${INSTALL} ]; then
         log $ERROR "Error"
     fi
 
-    echo -e "\r\n"
+    println
 
 fi
 
-#4 - POSTINSTALL
+# POSTINSTALL
+########################################################################
 
-python /usr/share/pinguino-11/post_install.py
+if [ ${REL} == stable ]; then
+    python /opt/pinguino/v${STABLE}/post_install.py
+fi
 
-#5 - END
+# COMPLETE
+########################################################################
 
-log $NORMAL "Installation complete."
+
+# LAUNCH
+########################################################################
+
+log $NORMAL "Do you want to launch the IDE ?"
+log $WARNING "1) Yes (default)"
+log $WARNING "2) No"
+read what
+
+case $what in
+    2)  log $NORMAL "Installation complete." ;;
+
+    *)  if [ ${REL} == stable ]; then
+            python /opt/pinguino/v${STABLE}/pinguino.py
+        else
+            python /opt/pinguino/v${TESTING}/pinguino-ide.py
+        fi
+        ;;
+esac

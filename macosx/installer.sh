@@ -1,4 +1,20 @@
 #!/bin/bash
+
+echo "Which release of Pinguino do you want to install ?"
+echo "1) Stable  (default)"
+echo "2) Testing"
+read what
+case $what in
+    2) RELEASE=testing
+       BRANCH=v12-dev
+       MAJOR=12 ;;
+    *) RELEASE=stable
+       BRANCH=master
+       MAJOR=11 ;;
+esac
+
+USERDIR=~/Pinguino/v${MAJOR}
+
 # Check if xcode is installed
 if [ `xcode-select -p` = "/Applications/Xcode.app/Contents/Developer" ] ; then
     echo "Xcode Installed..."
@@ -41,32 +57,33 @@ brew install pyside sdcc
 pip install gitpython hgapi beautifulsoup4 pyusb
 
 # Create pinguino directory in home folder
-[ ! -d ~/.pinguino ] && mkdir -pv ~/.pinguino
-[ ! -d /usr/share/pinguino-11 ] && sudo mkdir -pv /usr/share/pinguino-11
+[ ! -d ${USERDIR} ] && mkdir -pv ${USERDIR}
+[ ! -d /opt/pinguino/v${MAJOR} ] && sudo mkdir -pv /opt/pinguino/v${MAJOR}
 
 # Go to Pinguino folder
-cd ~/.pinguino
+cd ${USERDIR}
 
 # Get the basic pinguino IDE
-git clone https://github.com/PinguinoIDE/pinguino-ide.git ~/.pinguino
+git checkout ${BRANCH}
+git clone https://github.com/PinguinoIDE/pinguino-ide.git ${USERDIR}
 
 # Get the libraries
 wget --no-check-certificate https://github.com/PinguinoIDE/pinguino-libraries/archive/master.zip
-unzip master.zip -d ~/.pinguino
+unzip master.zip -d ${USERDIR}
 rm master.zip
 
 # Copy the libraries to pinguino main folder
-cp -a ~/.pinguino/pinguino-libraries-master/p* ~/.pinguino
+cp -a ${USERDIR}/pinguino-libraries-master/p* ${USERDIR}
 
 # Link the binaries to /usr folder
-sudo cp -aR p8 /usr/share/pinguino-11/
+sudo cp -aR p8 /opt/pinguino/v${MAJOR}/
 sudo ln -sfv /usr/local/bin/sdcc /usr/bin/sdcc
 # Check if alias exits in ~/.bash_profile
 if grep -q "alias pinguino" ~/.bash_profile|wc -l
 then
     echo "Instalation successful, you can run pinguino-IDE with command 'pinguino'."
 else
-    echo "alias pinguino='python ~/.pinguino/pinguino.py'" >> ~/.bash_profile
+    echo "alias pinguino='python ${USERDIR}/pinguino.py'" >> ~/.bash_profile
     source ~/.bash_profile
     echo "Instalation successful, you can run pinguino-IDE with command 'pinguino'."
 fi
