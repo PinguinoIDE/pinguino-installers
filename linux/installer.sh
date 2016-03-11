@@ -1,9 +1,9 @@
 #!/bin/bash
 
 # ----------------------------------------------------------------------
-# description:		Pinguino IDE Install Script
-# author:			regis blanchot <rblanchot@gmail.com>
-# first release:	25-04-2014
+# description:      Pinguino IDE Install Script
+# author:           regis blanchot <rblanchot@gmail.com>
+# first release:    25-04-2014
 # ----------------------------------------------------------------------
 # TODO
 # ----------------------------------------------------------------------
