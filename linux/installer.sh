@@ -96,7 +96,7 @@ function fetch {
 # Download a package from Microchip MPLAB site
 function fetch2 {
     #log $NORMAL "Downloading $1 package"
-    wget --quiet --timestamping ${XC8DLDIR}/$1.deb
+    wget --quiet --timestamping ${XC8DLDIR}/$1
     let "RFETCH=$RFETCH + $?"
     let "i=$i + $STEP"
     progress_bar ${BAR_WIDTH} ${i}
