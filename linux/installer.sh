@@ -8,7 +8,7 @@
 # TODO
 # ----------------------------------------------------------------------
 
-UPDATE=09-03-2016
+UPDATE=14-03-2016
 
 DOWNLOAD=1
 INSTALL=1
@@ -16,12 +16,13 @@ INTERFACE=
 RELEASE=1
 STABLE=11
 TESTING=12
+XC8INST=xc8-v1.36-full-install-linux-installer.run
 
 # Pinguino Sourceforge location
-DLDIR=https://sourceforge.net/projects/pinguinoide/files/linux/
-XC8DLDIR=http://www.microchip.com/mplabxc8linux/
+DLDIR=https://sourceforge.net/projects/pinguinoide/files/linux
 
 # Compilers code
+NONE=0
 SDCC=1
 XC8=2
 GCC=3
@@ -82,45 +83,24 @@ function progress_bar()
     printf " %3d%% %s" $2 ${bar_line}
 }
 
-
 # Download a package from Pinguino's SourceForge account
 function fetch {
     #log $NORMAL "Downloading $1 package"
-    wget --quiet --timestamping ${DLDIR}/$1.deb
-    let "RFETCH=$RFETCH + $?"
-    let "i=$i + $STEP"
-    progress_bar ${BAR_WIDTH} ${i}
-    echo -en "\r"
-}
-
-# Download a package from Microchip MPLAB site
-function fetch2 {
-    #log $NORMAL "Downloading $1 package"
-    wget --quiet --timestamping ${XC8DLDIR}/$1
-    let "RFETCH=$RFETCH + $?"
-    let "i=$i + $STEP"
-    progress_bar ${BAR_WIDTH} ${i}
-    echo -en "\r"
+    wget ${DLDIR}/$1 --quiet --timestamping --progress=bar:force --show-progress
 }
 
 # Install a package
 function install {
     #log $NORMAL "Installing $1 package"
-    #sudo dpkg -r $1.deb
-    #sudo dpkg -P $1.deb
-    sudo dpkg --install --force-overwrite $1.deb > /dev/null
-    sudo apt-get install -f > /dev/null
-    let "i=$i + $STEP"
-    progress_bar ${BAR_WIDTH} ${i}
-    echo -en "\r"
-}
-
-# Install a package
-function install2 {
-    #log $NORMAL "Installing $1 package"
-    #sudo dpkg -r $1.deb
-    #sudo dpkg -P $1.deb
-    sudo ./$1 > /dev/null
+    filename=$1
+    extension="${filename##*.}"
+    if [ "${extension}" == "deb" ]; then
+        sudo dpkg --install --force-overwrite $1 > /dev/null
+        sudo apt-get install -f > /dev/null
+    else
+        sudo chmod +x ${XC8INST}
+        sudo ./${XC8INST} > /dev/null
+    fi
     let "i=$i + $STEP"
     progress_bar ${BAR_WIDTH} ${i}
     echo -en "\r"
@@ -130,22 +110,21 @@ function install2 {
 ########################################################################
 
 log $CLS
-log $NORMAL ---------------------------------------------------------------
+log $NORMAL ------------------------------------------------------------
 log $NORMAL Pinguino IDE Installation Script
 log $NORMAL Regis Blanchot - rblanchot@pinguino.cc
 log $NORMAL Last update ${UPDATE}
-log $NORMAL ---------------------------------------------------------------
+log $NORMAL ------------------------------------------------------------
 
-# ADMIN
+# DO WE RUN AS ADMIN ?
 ########################################################################
 
 user=`env | grep '^USER=' | sed 's/^USER=//'`
-if [ "$user" != "root" -a "$UID" != "0" ]; then
-    log $ERROR "The installer needs to be run as root"
+if [ "$user" == "root" -a "$UID" == "0" ]; then
+    log $ERROR "Don't run the installer as root"
+    log $ERROR "Usage : ./installer.sh"
     println
     exit 1
-else
-    log $NORMAL "The installer has admin rights"
 fi
 
 # ARCHITECTURE
@@ -230,9 +209,11 @@ case $what in
         COMP=$((SDCC|XC8|GCC))
         STEP=20 ;;
     *)
-        COMP=0
+        COMP=$NONE
         STEP=50 ;;
 esac
+
+########################################################################
 
 if [ ${INTERFACE} ]; then
 
@@ -252,36 +233,46 @@ else
 
 fi
 
+########################################################################
+
 if [ ${DOWNLOAD} ]; then
 
     log $NORMAL "Downloading packages ..."
 
     i=0
-    RFETCH=0
+    #RFETCH=0
     
     if [ $TK == YES ]; then
-        fetch ${REL}/pinguino-ide-tk
+        fetch ${REL}/pinguino-ide-tk.deb
     else
-        fetch ${REL}/pinguino-ide
+        fetch ${REL}/pinguino-ide.deb
     fi
     
-    fetch ${REL}/pinguino-libraries
+    fetch ${REL}/pinguino-libraries.deb
 
-    if [ $((COMP & SDCC)) ]; then
-        fetch pinguino-linux${ARCH}-sdcc-mpic16
-    fi
+    if [ ! $COMP == 0 ]; then
+    
+        cd ..
 
-    if [ $((COMP & XC8)) ]; then
-        fetch2 xc8-v1.36-full-install-linux-installer.run
-    fi
+        if [ $((COMP & SDCC)) ]; then
+            fetch pinguino-linux${ARCH}-sdcc-mpic16.deb
+        fi
 
-    if [ $((COMP & GCC)) ]; then
-        fetch pinguino-linux${ARCH}-gcc-mips-elf
-    fi
+        if [ $((COMP & XC8)) ]; then
+            fetch ${XC8INST}
+        fi
 
-    if [ ! $RFETCH == 0 ]; then
-        log $ERROR "Error"
+        if [ $((COMP & GCC)) ]; then
+            fetch pinguino-linux${ARCH}-gcc-mips-elf.deb
+        fi
+
+        cd ${REL}
+
     fi
+    
+    #if [ ! $RFETCH == 0 ]; then
+    #    log $ERROR "Error"
+    #fi
 
     println
 
@@ -295,31 +286,38 @@ if [ ${INSTALL} ]; then
     log $NORMAL "Installing packages ..."
 
     i=0
-    RINST=0
+    #RINST=0
 
-    if [ $((COMP & SDCC)) ]; then
-        install pinguino-linux${ARCH}-sdcc-mpic16
+    if [ ! $COMP == 0 ]; then
+
+        cd ..
+
+        if [ $((COMP & SDCC)) ]; then
+            install pinguino-linux${ARCH}-sdcc-mpic16.deb
+        fi
+
+        if [ $((COMP & XC8)) ]; then
+            install ${XC8INST}
+        fi
+
+        if [ $((COMP & GCC)) ]; then
+            install pinguino-linux${ARCH}-gcc-mips-elf.deb
+        fi
+
+        cd ${REL}
     fi
 
-    if [ $((COMP & XC8)) ]; then
-        install2 xc8-v1.36-full-install-linux-installer.run
-    fi
-
-    if [ $((COMP & GCC)) ]; then
-        install pinguino-linux${ARCH}-gcc-mips-elf
-    fi
-
-    install pinguino-libraries
+    install pinguino-libraries.deb
 
     if [ $TK == YES ]; then
-        install pinguino-ide-tk
+        install pinguino-ide-tk.deb
     else
-        install pinguino-ide
+        install pinguino-ide.deb
     fi
 
-    if [ ! $RINST == 0 ]; then
-        log $ERROR "Error"
-    fi
+    #if [ ! $RINST == 0 ]; then
+    #    log $ERROR "Error"
+    #fi
 
     println
 
@@ -328,13 +326,10 @@ fi
 # POSTINSTALL
 ########################################################################
 
-if [ ${REL} == stable ]; then
+echo ${REL}
+if [ "${REL}" == "stable" ]; then
     python /opt/pinguino/v${STABLE}/post_install.py
 fi
-
-# COMPLETE
-########################################################################
-
 
 # LAUNCH
 ########################################################################
@@ -347,7 +342,7 @@ read what
 case $what in
     2)  log $NORMAL "Installation complete." ;;
 
-    *)  if [ ${REL} == stable ]; then
+    *)  if [ "${REL}" == "stable" ]; then
             python /opt/pinguino/v${STABLE}/pinguino.py
         else
             python /opt/pinguino/v${TESTING}/pinguino-ide.py
