@@ -39,6 +39,8 @@ Tested on:
 * Windows 7 Premium 64-bit
 
 ### Changelog
+v1.1.0.7
+* Added stable/testing choice
 v1.1.0.6
 * Added start Pinguino IDE functionnality
 * Added automatic transparent driver installation
