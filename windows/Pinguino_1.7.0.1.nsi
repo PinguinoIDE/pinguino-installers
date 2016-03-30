@@ -3,13 +3,16 @@
 ; Public Domain License 2014-2016
 ; 1.1 to 1.3 : Victor Villarreal <mefhigoseth@gmail.com>
 ; 1.4 to 1.7 : Regis Blanchot <rblanchot@pinguino.cc>
-;
-; To compile this script : makensis.exe /V4 Pinguino_x.x.x.nsi
-; /V0=no output
-; /V1=errors only
-; /V2=warnings and errors
-; /V3=info, warnings, and errors
-; /V4=all output
+;-----------------------------------------------------------------------
+; CHANGELOG
+; 1.7.0.0 : Pinguino Stable or Testing installation
+; 1.7.0.1 : Fixed embeded pinguino.bmp and curl.exe
+;-----------------------------------------------------------------------
+; TODO
+; Better Operating System detection, cf. http://nsis.sourceforge.net/Get_Windows_version
+; Compiler Uninstaller
+;-----------------------------------------------------------------------
+; To compile this script : makensis.exe Pinguino_x.x.x.x.nsi
 ;-----------------------------------------------------------------------
 
 XPStyle on
@@ -17,14 +20,14 @@ RequestExecutionLevel admin				;Request application privileges
 SetDatablockOptimize on
 SetCompress force
 SetCompressor /SOLID lzma
-ShowInstDetails show
+ShowInstDetails show					;Show installation logs
 
 ;-----------------------------------------------------------------------
 ;Includes
 ;-----------------------------------------------------------------------
 
-!include "Sections.nsh"
-!include "WinMessages.nsh"
+;!include "Sections.nsh"
+;!include "WinMessages.nsh"
 !include "MUI2.nsh"
 !include "FileFunc.nsh"
 !include "WinVer.nsh"
@@ -35,7 +38,7 @@ ShowInstDetails show
 ;Defines
 ;-----------------------------------------------------------------------
 
-!define INSTALLER_VERSION				'1.7.0.0'
+!define INSTALLER_VERSION				'1.7.0.1'
 !define PYTHON_VERSION					'2.7.10'
 !define PYUSB_VERSION					'1.0.0rc1'
 !define PYSIDE_VERSION					'1.2.2'
@@ -302,9 +305,29 @@ Function .onInit
 
     !insertmacro MUI_LANGDLL_DISPLAY
 	InitPluginsDir
-    ;Detect Architecture and OS...
-    Call GetArchitecture
-	
+
+	;Detect the architecture of host system (32 or 64 bits)
+    StrCpy $os_platform "x86"
+    StrCmp $PROGRAMFILES $PROGRAMFILES64 +2
+    StrCpy $os_platform "amd64"
+
+    ;Detect the Operating System
+	;TODO : http://nsis.sourceforge.net/Get_Windows_version
+	;${if} ${AtLeastWindows7}
+        ; System is Microsoft Windows 7, 8 or later...
+		;StrCpy $os_version "W7"
+    ;${else}
+		${if} ${AtLeastWinVista}
+			; System is Microsoft Windows Vista...
+			StrCpy $os_version "Vista"
+		${else}
+			; System is Microsoft Windows XP...
+			StrCpy $os_version "XP"
+		${endif}
+    ;${endif}
+
+    DetailPrint "$(msg_your_system_is) Microsoft Windows $os_version ($os_platform)."
+
 FunctionEnd
 
 Function un.onInit
@@ -339,13 +362,18 @@ Section "Install"
     ;Install for all users
     SetShellVarContext all
 
+	;Embedded files
+    SetOutPath $EXEDIR
+    File ${CURL}
+	File ${PINGUINO_BMP}
+	;Copy curl.exe and pinguino.bmp
+	;CopyFiles ${CURL} $EXEDIR\${CURL}
+	;CopyFiles ${PINGUINO_BMP} $EXEDIR\${PINGUINO_BMP}
+
     ;Install path
-    SetOutPath "$INSTDIR"
+    SetOutPath $INSTDIR
 	;DetailPrint "INSTDIR=$INSTDIR"
 	;DetailPrint "EXEDIR=$EXEDIR"
-
-	;Copy curl.exe
-	CopyFiles "${CURL}" "$EXEDIR\${CURL}"
 
     ;Detect and install Python, Pip and Pip modules ......
     Call InstallPython
@@ -427,7 +455,7 @@ Function PAGE_RELEASE
 
 	${NSD_CreateBitmap} 0 0 100% 80% ""
 	Pop $Image
-	${NSD_SetImage} $Image ${PINGUINO_BMP} $ImageHandle
+	${NSD_SetImage} $Image "$EXEDIR\${PINGUINO_BMP}" $ImageHandle
 	;${NSD_SetStretchedImage} $Image ${PINGUINO_BMP} $ImageHandle
 	nsDialogs::Show
 	${NSD_FreeImage} $ImageHandle
@@ -489,7 +517,7 @@ Function PAGE_COMPILERS
 
 	${NSD_CreateBitmap} 0 0 100% 80% ""
 	Pop $Image
-	${NSD_SetImage} $Image ${PINGUINO_BMP} $ImageHandle
+	${NSD_SetImage} $Image "$EXEDIR\${PINGUINO_BMP}" $ImageHandle
 	;${NSD_SetStretchedImage} $Image ${PINGUINO_BMP} $ImageHandle
 	nsDialogs::Show
 
@@ -587,35 +615,6 @@ Function Download
 FunctionEnd
 
 ;-----------------------------------------------------------------------
-;Detect the architecture of host system (32 or 64 bits)
-;and the Operating System Version.
-;TODO : http://nsis.sourceforge.net/Get_Windows_version
-;-----------------------------------------------------------------------
-
-Function GetArchitecture
-
-    StrCpy $os_platform "x86"
-    StrCmp $PROGRAMFILES $PROGRAMFILES64 +2
-    StrCpy $os_platform "amd64"
-
-	;${if} ${AtLeastWindows7}
-        ; System is Microsoft Windows 7, 8 or later...
-		;StrCpy $os_version "W7"
-    ;${else}
-		${if} ${AtLeastWinVista}
-			; System is Microsoft Windows Vista...
-			StrCpy $os_version "Vista"
-		${else}
-			; System is Microsoft Windows XP...
-			StrCpy $os_version "XP"
-		${endif}
-    ;${endif}
-
-    DetailPrint "$(msg_your_system_is) Microsoft Windows $os_version ($os_platform)."
-
-FunctionEnd
-
-;-----------------------------------------------------------------------
 ; Python v2.7 detection and installation routine.
 ;-----------------------------------------------------------------------
 
@@ -623,7 +622,7 @@ Function InstallPython
 
 	;Check if Python is installed
     ReadRegStr $0 HKLM "SOFTWARE\Python\PythonCore\2.7\InstallPath" ""
-    IfErrors Done 0
+    IfErrors 0 Done
 
     ;Download the Python installer
     DetailPrint "Python v2.7 $(msg_not_detected)"

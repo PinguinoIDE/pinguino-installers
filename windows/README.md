@@ -8,19 +8,18 @@ Pinguino-IDE Windows Installer
   + PyPIP
   + Wheel
   + BeautifullSoup4
-  + python-git
   + PyUSB
-  + PySIDE v1.2.2
-  + libUSB
-  + pinguino-ide package.
-  + pinguino-libraries package.
-  + pinguino-compilers package.
+  + PySIDE
+  + LibUSB
+  + pinguino-ide package
+  + pinguino-libraries package
+  + Compilers packages
   + Pinguino device drivers.
 * Allow semi-automatic Pinguino device drivers installation
   +  8-bit Pinguino boards : VID 04D8 / PID FEAA
   +  8-bit Pinguino boards : VID 04D8 / PID FEAB
   + 32-bit Pinguino boards : VID 04D8 / PID 003C
-* Installer size: 1505 KB.
+* Installer size: 1229 KB.
 * Multi-language: English, French, Italian, Portuguese and Spanish
 
 ### Supported OS
@@ -39,9 +38,13 @@ Tested on:
 * Windows 7 Premium 64-bit
 
 ### Changelog
-v1.1.0.7
+v1.7.0.1
+* Fixed the way curl.exe and pinguino11.bmp are wrapped up
+v1.7.0.0
+* Build with Nullsoft Scriptable Install System v3.0b3
 * Added stable/testing choice
-v1.1.0.6
+* Added xc8 compiler choice
+v1.6.0.0
 * Added start Pinguino IDE functionnality
 * Added automatic transparent driver installation
 * Added CDC driver
@@ -55,14 +58,14 @@ v1.1.0.6
 * Created Download macro
 * Updated detection routine
 * Python can now be installed anywhere not only on C:
-v1.1.0.5
+v1.5.0.0
 * Added Python support for X86 and X86-64
 * Added PySide support for X86 and X86-64
 * Python and PySide are no more embedded but downloaded during installation
-v1.1.0.4
+v1.4.0.0
 * Build with Nullsoft Scriptable Install System v3.0b1
 * Added latest Python 2.7.10 support
-v1.1.0.3
+v1.3.0.0
 * Updated drivers installation info.
 * Fixed Windows Vista and later Pinguino device driver pre-install.
 * PIC32 compilers and libraries added.
@@ -71,20 +74,22 @@ v1.1.0.3
 * Download the proper Pinguino Compiler based on system architecture (32/64).
 * Allows user to select the compilers to be installed (PIC8 and/or PIC32).
 * The installer get the latest Pinguino packages from SourceForge.
-v1.1.0.2
+v1.2.0.0
 * Unzip routine speed-up improvement.
 * Italian language translation update, thanks to Pasquale Fersini.
 * Portugese Brazil language translation update, thanks to Wagner de Queiroz.
-v1.1.0.1
+v1.1.0.0
 * Build with Nullsoft Scriptable Install System v2.46
+v1.0.0.0
+* Test version
 
 ### Help & Resources
 
 * Pinguino Site: http://www.pinguino.cc
-* Pinguino IDE v11 repo: https://github.com/PinguinoIDE
+* Pinguino IDE repo: https://github.com/PinguinoIDE
 * Pinguino IDE installers: https://github.com/PinguinoIDE/pinguino-installers
 
-Questions about this installer ? No problem! Drop me an email.
+Questions about this installer ? No problem! Drop us an email.
 
 [mefhigoseth at gmail dot com]
 [rblanchot at gmail dot com]
