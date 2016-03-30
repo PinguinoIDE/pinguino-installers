@@ -38,6 +38,11 @@ Tested on:
 * Windows 7 Premium 64-bit
 
 ### Changelog
+v1.7.0.2
+* Fixed English translation
+* Better logo management
+* Download the compilers before the drivers
+* XC8 installation only for the testing version 
 v1.7.0.1
 * Fixed the way curl.exe and pinguino11.bmp are wrapped up
 v1.7.0.0
