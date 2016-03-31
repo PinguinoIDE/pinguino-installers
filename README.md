@@ -9,6 +9,6 @@ Installation scripts for the Pinguino IDE
 
 <b>Windows</b>
 <hr>
-<p>Click on the file name (Pinguino-installer-v1.7.0.x .exe)</p>
+<p>Click on the file name (<b>Pinguino-installer-v1.7.0.x .exe</b>)</p>
 <p>Click on the RAW button</p>
 
