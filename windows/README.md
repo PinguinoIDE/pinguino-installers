@@ -5,11 +5,12 @@ Pinguino-IDE Windows Installer
 
 * Detects and installs all the required software for the Pinguino IDE.
   + Python v2.7
+  + PySIDE
   + PyPIP
   + Wheel
   + BeautifullSoup4
+  + Setuptools
   + PyUSB
-  + PySIDE
   + LibUSB
   + pinguino-ide package
   + pinguino-libraries package
@@ -22,6 +23,12 @@ Pinguino-IDE Windows Installer
 * Installer size: 1229 KB.
 * Multi-language: English, French, Italian, Portuguese and Spanish
 
+### TODO
+
+* Better Operating System detection, cf. http://nsis.sourceforge.net/Get_Windows_version
+* Improve compilers uninstaller page
+* Installation in user's own path
+
 ### Supported OS
 
 * This installer should work fine on the following Microsoft O.S.:
@@ -29,15 +36,23 @@ Pinguino-IDE Windows Installer
   + Windows Vista (32 and 64-bits).
   + Windows 7 (32 and 64-bits).
   + Windows 8 (32 and 64-bits).
-* 300Mb free space on disk for all the installed software.
+  + Windows 10 (32 and 64-bits).
+* Note: about 300Mb free space on disk required.
 
 Tested on:
 
 * Windows XP Professional SP2 and SP3 32-bit
 * Windows 7 Ultimate 32-bit
 * Windows 7 Premium 64-bit
-
+* Windows 8.1 32-bit
+* Windows 10 64-bit
+ 
 ### Changelog
+
+v1.7.0.3
+* Added a marquee control when downloading
+* Updated the way PIP modules are installed
+* Removed installation in user's own path
 v1.7.0.2
 * Fixed English translation
 * Better logo management
