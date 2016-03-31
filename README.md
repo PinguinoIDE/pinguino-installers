@@ -9,5 +9,6 @@ Installation scripts for the Pinguino IDE
 
 <b>Windows</b>
 <hr>
-<p>See https://github.com/MefhigosetH/pinguino-nsi-installer</p>
+<p>Click on the file name (Pinguino-installer-v1.7.0.x .exe)</p>
+<p>Click on the RAW button</p>
 
