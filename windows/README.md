@@ -49,6 +49,8 @@ Tested on:
  
 ### Changelog
 
+v1.7.0.4
+* Fixed Register Base reading for 64-bit OS
 v1.7.0.3
 * Added a marquee control when downloading
 * Updated the way PIP modules are installed
