@@ -8,7 +8,7 @@
 # TODO
 # ----------------------------------------------------------------------
 
-UPDATE=14-03-2016
+UPDATE=31-03-2016
 
 DOWNLOAD=1
 INSTALL=1
@@ -25,7 +25,7 @@ DLDIR=https://sourceforge.net/projects/pinguinoide/files/linux
 NONE=0
 SDCC=1
 XC8=2
-GCC=3
+GCC=4
 
 # ANSI Escape Sequences
 RED='\e[31;1m'
@@ -84,9 +84,10 @@ function progress_bar()
 }
 
 # Download a package from Pinguino's SourceForge account
+# 31-03-2016 : removed --show-progress (not supported on all Linux distro)
 function fetch {
-    #log $NORMAL "Downloading $1 package"
-    wget ${DLDIR}/$1 --quiet --timestamping --progress=bar:force --show-progress
+    log $NORMAL "* $1 package"
+    wget ${DLDIR}/$1 --quiet --timestamping --progress=bar:force
 }
 
 # Install a package
@@ -125,6 +126,15 @@ if [ "$user" == "root" -a "$UID" == "0" ]; then
     log $ERROR "Usage : ./installer.sh"
     println
     exit 1
+fi
+
+# DO WE HAVE WGET ?
+########################################################################
+
+if [ ! -e "/usr/bin/wget" ]; then
+    log $WARNING "You don't have wget installed"
+    log $WARNING "I will install it for you ..."
+    sudo apt-get install wget
 fi
 
 # ARCHITECTURE
@@ -196,20 +206,15 @@ echo -e -n "\e[00m"
 case $what in
     2)  COMP=$SDCC
         STEP=33 ;;
-    3)
-        COMP=$XC8
+    3)  COMP=$XC8
         STEP=33 ;;
-    4)
-        COMP=$GCC
+    4)  COMP=$GCC
         STEP=33 ;;
-    5)
-        COMP=$((SDCC|XC8))
+    5)  COMP=$((SDCC|XC8))
         STEP=25 ;;
-    6)
-        COMP=$((SDCC|XC8|GCC))
+    6)  COMP=$((SDCC|XC8|GCC))
         STEP=20 ;;
-    *)
-        COMP=$NONE
+    *)  COMP=$NONE
         STEP=50 ;;
 esac
 
@@ -240,7 +245,8 @@ if [ ${DOWNLOAD} ]; then
     log $NORMAL "Downloading packages ..."
 
     i=0
-    #RFETCH=0
+
+    # Pinguino files
     
     if [ $TK == YES ]; then
         fetch ${REL}/pinguino-ide-tk.deb
@@ -250,29 +256,15 @@ if [ ${DOWNLOAD} ]; then
     
     fetch ${REL}/pinguino-libraries.deb
 
-    if [ ! $COMP == 0 ]; then
-    
-        cd ..
+    # Compilers
 
-        if [ $((COMP & SDCC)) ]; then
-            fetch pinguino-linux${ARCH}-sdcc-mpic16.deb
-        fi
-
-        if [ $((COMP & XC8)) ]; then
-            fetch ${XC8INST}
-        fi
-
-        if [ $((COMP & GCC)) ]; then
-            fetch pinguino-linux${ARCH}-gcc-mips-elf.deb
-        fi
-
-        cd ${REL}
-
-    fi
-    
-    #if [ ! $RFETCH == 0 ]; then
-    #    log $ERROR "Error"
-    #fi
+    cd ..
+    case 1 in
+        $(( (COMP & SDCC) >0 )) ) fetch pinguino-linux${ARCH}-sdcc-mpic16.deb;;&
+        $(( (COMP &  XC8) >0 )) ) fetch ${XC8INST};;&
+        $(( (COMP &  GCC) >0 )) ) fetch pinguino-linux${ARCH}-gcc-mips-elf.deb;;&
+    esac
+    cd ${REL}
 
     println
 
@@ -286,38 +278,26 @@ if [ ${INSTALL} ]; then
     log $NORMAL "Installing packages ..."
 
     i=0
-    #RINST=0
 
-    if [ ! $COMP == 0 ]; then
-
-        cd ..
-
-        if [ $((COMP & SDCC)) ]; then
-            install pinguino-linux${ARCH}-sdcc-mpic16.deb
-        fi
-
-        if [ $((COMP & XC8)) ]; then
-            install ${XC8INST}
-        fi
-
-        if [ $((COMP & GCC)) ]; then
-            install pinguino-linux${ARCH}-gcc-mips-elf.deb
-        fi
-
-        cd ${REL}
-    fi
-
-    install pinguino-libraries.deb
-
+    # Pinguino files
+    
     if [ $TK == YES ]; then
         install pinguino-ide-tk.deb
     else
         install pinguino-ide.deb
     fi
 
-    #if [ ! $RINST == 0 ]; then
-    #    log $ERROR "Error"
-    #fi
+    install pinguino-libraries.deb
+
+    # Compilers
+
+    cd ..
+    case 1 in
+        $(( (COMP & SDCC) >0 )) ) install pinguino-linux${ARCH}-sdcc-mpic16.deb;;&
+        $(( (COMP &  XC8) >0 )) ) install ${XC8INST};;&
+        $(( (COMP &  GCC) >0 )) ) install pinguino-linux${ARCH}-gcc-mips-elf.deb;;&
+    esac
+    cd ${REL}
 
     println
 
@@ -326,7 +306,6 @@ fi
 # POSTINSTALL
 ########################################################################
 
-echo ${REL}
 if [ "${REL}" == "stable" ]; then
     python /opt/pinguino/v${STABLE}/post_install.py
 fi
@@ -337,7 +316,10 @@ fi
 log $NORMAL "Do you want to launch the IDE ?"
 log $WARNING "1) Yes (default)"
 log $WARNING "2) No"
+
+echo -e -n "\e[31;1m >\e[05m"
 read what
+echo -e -n "\e[00m"
 
 case $what in
     2)  log $NORMAL "Installation complete." ;;
