@@ -132,8 +132,7 @@ fi
 ########################################################################
 
 if [ ! -e "/usr/bin/wget" ]; then
-    log $WARNING "You don't have wget installed"
-    log $WARNING "I will install it for you ..."
+    log $WARNING "Wget not found, installing it ..."
     sudo apt-get install wget
 fi
 
