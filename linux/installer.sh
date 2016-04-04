@@ -5,17 +5,23 @@
 # author:           regis blanchot <rblanchot@gmail.com>
 # first release:    25-04-2014
 # ----------------------------------------------------------------------
+# CHANGELOG
+# 03-04-2016 : changed dpkg for gdebi 
+# ----------------------------------------------------------------------
 # TODO
 # ----------------------------------------------------------------------
 
-UPDATE=31-03-2016
+UPDATE=03-04-2016
 
 DOWNLOAD=1
 INSTALL=1
 INTERFACE=
 RELEASE=1
+
 STABLE=11
 TESTING=12
+DPKG=gdebi
+
 XC8INST=xc8-v1.36-full-install-linux-installer.run
 
 # Pinguino Sourceforge location
@@ -92,12 +98,13 @@ function fetch {
 
 # Install a package
 function install {
-    #log $NORMAL "Installing $1 package"
+    log $NORMAL "* $1 package"
     filename=$1
     extension="${filename##*.}"
     if [ "${extension}" == "deb" ]; then
-        sudo dpkg --install --force-overwrite $1 > /dev/null
-        sudo apt-get install -f > /dev/null
+        sudo gdebi --non-interactive --quiet $1 > /dev/null
+        #sudo dpkg --install --force-overwrite $1 > /dev/null
+        #sudo apt-get install -f > /dev/null
     else
         sudo chmod +x ${XC8INST}
         sudo ./${XC8INST} > /dev/null
@@ -134,6 +141,14 @@ fi
 if [ ! -e "/usr/bin/wget" ]; then
     log $WARNING "Wget not found, installing it ..."
     sudo apt-get install wget
+fi
+
+# DO WE HAVE GDEBI ?
+########################################################################
+
+if [ ! -e "/usr/bin/gdebi" ]; then
+    log $WARNING "Gdebi not found, installing it ..."
+    sudo apt-get install gdebi
 fi
 
 # ARCHITECTURE
@@ -184,18 +199,22 @@ cd ${REL}
 ########################################################################
 
 if [ $ARCH == RPi ]; then
+
     log $NORMAL "Host memory is too limited for 32-bit compiler."
     log $NORMAL "Do you want to install the 8-bit compiler ?"
     log $WARNING "1) no (default)"
     log $WARNING "2) yes"
+
 else
-    log $NORMAL "What compiler(s) do you want to install ?"
+
+    log $NORMAL "Which compiler(s) do you want to install ?"
     log $WARNING "1) none of them (default)"
     log $WARNING "2) SDCC (PIC18F) only"
     log $WARNING "3) XC8 (PIC16F and PIC18F) only"
     log $WARNING "4) GCC (PIC32MX) only"
     log $WARNING "5) SDCC and XC8 (PIC16F and PIC18F) only"
     log $WARNING "6) all (SDCC, XC8 and GCC)"
+
 fi
 
 echo -e -n "\e[31;1m >\e[05m"

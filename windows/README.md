@@ -49,9 +49,12 @@ Tested on:
  
 ### Changelog
 
+v1.7.0.6
+* Fixed pinguino.windows.conf "" issue
+* Added call to post-install routine for testing
 v1.7.0.5
 * Fixed path issues
-* Automatic update of Pinguino.windows.conf
+* Automatic update of pinguino.windows.conf
 v1.7.0.4
 * Fixed Register Base reading for 64-bit OS
 v1.7.0.3
