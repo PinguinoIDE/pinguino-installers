@@ -49,9 +49,11 @@ Tested on:
  
 ### Changelog
 
+v1.7.0.7
+* Added Pip update
+* Added call to post-install routine for testing
 v1.7.0.6
 * Fixed pinguino.windows.conf "" issue
-* Added call to post-install routine for testing
 v1.7.0.5
 * Fixed path issues
 * Automatic update of pinguino.windows.conf

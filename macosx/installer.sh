@@ -1,5 +1,18 @@
 #!/bin/bash
 
+# ----------------------------------------------------------------------
+# description:      Pinguino IDE Install Script
+# author:           regis blanchot <rblanchot@gmail.com>
+#                   ??
+# first release:    25-04-2014
+# ----------------------------------------------------------------------
+# CHANGELOG
+# ----------------------------------------------------------------------
+# TODO
+# ----------------------------------------------------------------------
+
+UPDATE=11-04-2016
+
 echo "Which release of Pinguino do you want to install ?"
 echo "1) Stable  (default)"
 echo "2) Testing"
@@ -16,7 +29,7 @@ esac
 USERDIR=~/Pinguino/v${MAJOR}
 
 # Check if xcode is installed
-if [ `xcode-select -p` = "/Applications/Xcode.app/Contents/Developer" ] ; then
+if [`xcode-select -p`="/Applications/Xcode.app/Contents/Developer"]; then
     echo "Xcode Installed..."
 else
     echo "ERROR: No Xcode Instalation found.
@@ -25,7 +38,7 @@ Please install Xcode and continue with this script"
 fi
 
 # Check for git
-if [ `git --version` = "-bash: git: command not found" ] ; then
+if [`git --version`="-bash: git: command not found"]; then
     echo "Installing developer tools..."
     xcode-select --install
 else
@@ -33,7 +46,7 @@ else
 fi
 
 # Check if homebrew is installed
-if [ `brew --version` = "-bash: brew: command not found" ] ; then
+if [`brew --version`="-bash: brew: command not found"]; then
     echo "Installing homebrew tools..."
     ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)"
 else
@@ -42,7 +55,7 @@ else
 fi
 
 # Check for brew doctor messages
-if [ `brew doctor` = "Your system is ready to brew." ] ; then
+if [`brew doctor`="Your system is ready to brew."]; then
     echo "Homebrew is up and ready... "
 else
     echo "Homebrew seems to be sick run brew doctor and fix your problems, then come back."
@@ -54,7 +67,7 @@ brew install python
 brew install pyside sdcc
 
 # Install python packages
-pip install gitpython hgapi beautifulsoup4 pyusb
+pip install gitpython hgapi beautifulsoup4 pyusb setuptools pinguino
 
 # Create pinguino directory in home folder
 [ ! -d ${USERDIR} ] && mkdir -pv ${USERDIR}
@@ -64,8 +77,8 @@ pip install gitpython hgapi beautifulsoup4 pyusb
 cd ${USERDIR}
 
 # Get the basic pinguino IDE
-git checkout ${BRANCH}
-git clone https://github.com/PinguinoIDE/pinguino-ide.git ${USERDIR}
+#git checkout ${BRANCH}
+#git clone https://github.com/PinguinoIDE/pinguino-ide.git ${USERDIR}
 
 # Get the libraries
 wget --no-check-certificate https://github.com/PinguinoIDE/pinguino-libraries/archive/master.zip
