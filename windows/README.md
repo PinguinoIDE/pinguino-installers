@@ -49,6 +49,8 @@ Tested on:
  
 ### Changelog
 
+v1.7.0.8
+* Fixed path to pinguino_reset.py
 v1.7.0.7
 * Added Pip update
 * Added call to post-install routine for testing
