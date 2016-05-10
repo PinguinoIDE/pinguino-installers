@@ -6,12 +6,13 @@
 # first release:    25-04-2014
 # ----------------------------------------------------------------------
 # CHANGELOG
-# 03-04-2016 : changed dpkg for gdebi 
+# 03-04-2016 : changed dpkg for gdebi
+# 09-05-2016 : added "--mode text" option to XC8 installer
 # ----------------------------------------------------------------------
 # TODO
 # ----------------------------------------------------------------------
 
-UPDATE=03-04-2016
+UPDATE=09-05-2016
 
 DOWNLOAD=1
 INSTALL=1
@@ -107,7 +108,7 @@ function install {
         #sudo apt-get install -f > /dev/null
     else
         sudo chmod +x ${XC8INST}
-        sudo ./${XC8INST} > /dev/null
+        sudo ./${XC8INST} --mode text > /dev/null
     fi
     let "i=$i + $STEP"
     progress_bar ${BAR_WIDTH} ${i}
