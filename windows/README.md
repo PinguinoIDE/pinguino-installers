@@ -49,6 +49,9 @@ Tested on:
  
 ### Changelog
 
+v1.7.0.10
+* Simplified all dependencies installation
+* Fixed PyUSB install
 v1.7.0.9
 * Fixed pinguino_reset.py to pinguino-reset.py
 v1.7.0.8
