@@ -6,13 +6,24 @@
 # first release:    25-04-2014
 # ----------------------------------------------------------------------
 # CHANGELOG
+# ----------------------------------------------------------------------
+# 11-08-2016 : added pinguino.linux.conf updating
+# 11-08-2016 : added latest XC8 version downloading
+# 11-08-2016 : fixed XC8 installation by removing "/dev/null" direction 
+# 11-08-2016 : added post-install procedure for the testing version
 # 03-04-2016 : changed dpkg for gdebi
 # 09-05-2016 : added "--mode text" option to XC8 installer
+# 11-05-2016 : added update option to run git
+# 31-03-2016 : removed wget "--show-progress" option (not supported on all Linux distro)
 # ----------------------------------------------------------------------
 # TODO
 # ----------------------------------------------------------------------
+# replace package installation with git clone ?
+# replace package update with git pull ?
+# update or install all necessary python modules ? 
+# ----------------------------------------------------------------------
 
-UPDATE=09-05-2016
+VERSION=11-08-2016
 
 DOWNLOAD=1
 INSTALL=1
@@ -23,8 +34,13 @@ STABLE=11
 TESTING=12
 DPKG=gdebi
 
-XC8INST=xc8-v1.36-full-install-linux-installer.run
+#XC8INST=xc8-v1.36-full-install-linux-installer.run
+XC8INST=mplabxc8linux
 
+# Pinguino location
+XC8DIR=www.microchip.com
+# Pinguino location
+PDIR=/opt/pinguino
 # Pinguino Sourceforge location
 DLDIR=https://sourceforge.net/projects/pinguinoide/files/linux
 
@@ -90,14 +106,17 @@ function progress_bar()
     printf " %3d%% %s" $2 ${bar_line}
 }
 
-# Download a package from Pinguino's SourceForge account
-# 31-03-2016 : removed --show-progress (not supported on all Linux distro)
+# Download a package if newer
 function fetch {
     log $NORMAL "* $1 package"
-    wget ${DLDIR}/$1 --quiet --timestamping --progress=bar:force
+    if [ "$1" == "${XC8INST}" ]; then
+        wget ${XC8DIR}/$1 --quiet --timestamping --progress=bar:force
+    else
+        wget ${DLDIR}/$1 --quiet --timestamping --progress=bar:force
+    fi
 }
 
-# Install a package
+# Install a package if newer
 function install {
     log $NORMAL "* $1 package"
     filename=$1
@@ -108,11 +127,15 @@ function install {
         #sudo apt-get install -f > /dev/null
     else
         sudo chmod +x ${XC8INST}
-        sudo ./${XC8INST} --mode text > /dev/null
+        NEWXC8VER=v1.$(sudo ./${XC8INST} --version  | grep -Po '(?<=v1.)\d\d')
+        #log $ERROR ${XC8VER}
+        if [ ! -d "/opt/microchip/xc8/$NEWXC8VER" ]; then
+            sudo ./${XC8INST} --mode text
+        fi
     fi
-    let "i=$i + $STEP"
-    progress_bar ${BAR_WIDTH} ${i}
-    echo -en "\r"
+    #let "i=$i + $STEP"
+    #progress_bar ${BAR_WIDTH} ${i}
+    #echo -en "\r"
 }
 
 # TITLE
@@ -122,7 +145,7 @@ log $CLS
 log $NORMAL ------------------------------------------------------------
 log $NORMAL Pinguino IDE Installation Script
 log $NORMAL Regis Blanchot - rblanchot@pinguino.cc
-log $NORMAL Last update ${UPDATE}
+log $NORMAL Last update ${VERSION}
 log $NORMAL ------------------------------------------------------------
 
 # DO WE RUN AS ADMIN ?
@@ -130,7 +153,8 @@ log $NORMAL ------------------------------------------------------------
 
 user=`env | grep '^USER=' | sed 's/^USER=//'`
 if [ "$user" == "root" -a "$UID" == "0" ]; then
-    log $ERROR "Don't run the installer as root"
+    log $ERROR "Don't run the installer as Root or Super User."
+    log $ERROR "Admin's password will be asked later."
     log $ERROR "Usage : ./installer.sh"
     println
     exit 1
@@ -150,6 +174,14 @@ fi
 if [ ! -e "/usr/bin/gdebi" ]; then
     log $WARNING "Gdebi not found, installing it ..."
     sudo apt-get install gdebi
+fi
+
+# DO WE HAVE GIT ?
+########################################################################
+
+if [ ! -e "/usr/bin/git" ]; then
+    log $WARNING "Git not found, installing it ..."
+    sudo apt-get install git
 fi
 
 # ARCHITECTURE
@@ -174,7 +206,7 @@ fi
 
 if [ ${RELEASE} ]; then
 
-    log $NORMAL "Which release of Pinguino do you want to install ?"
+    log $NORMAL "Which release of Pinguino do you want to update/install ?"
     log $WARNING "1) Stable  (default)"
     log $WARNING "2) Testing"
 
@@ -199,43 +231,76 @@ cd ${REL}
 # DOWNLOAD
 ########################################################################
 
-if [ $ARCH == RPi ]; then
+if [ ${DOWNLOAD} ]; then
 
-    log $NORMAL "Host memory is too limited for 32-bit compiler."
-    log $NORMAL "Do you want to install the 8-bit compiler ?"
-    log $WARNING "1) no (default)"
-    log $WARNING "2) yes"
+    if [ $ARCH == RPi ]; then
 
-else
+        log $NORMAL "Host memory is too limited for 32-bit compiler."
+        log $NORMAL "Do you want to install the 8-bit compiler ?"
+        log $WARNING "1) no (default)"
+        log $WARNING "2) yes"
 
-    log $NORMAL "Which compiler(s) do you want to install ?"
-    log $WARNING "1) none of them (default)"
-    log $WARNING "2) SDCC (PIC18F) only"
-    log $WARNING "3) XC8 (PIC16F and PIC18F) only"
-    log $WARNING "4) GCC (PIC32MX) only"
-    log $WARNING "5) SDCC and XC8 (PIC16F and PIC18F) only"
-    log $WARNING "6) all (SDCC, XC8 and GCC)"
+    else
+
+        if [ "${REL}" == "stable" ]; then
+
+            log $NORMAL "Which compiler(s) do you want to install ?"
+            log $WARNING "1) none of them (default)"
+            log $WARNING "2) SDCC (PIC18F) only"
+            log $WARNING "3) GCC (PIC32MX) only"
+            log $WARNING "4) both (SDCC and GCC)"
+
+        else
+
+            log $NORMAL "Which compiler(s) do you want to install ?"
+            log $WARNING "1) none of them (default)"
+            log $WARNING "2) SDCC (PIC18F) only"
+            log $WARNING "3) XC8 (PIC16F and PIC18F) only"
+            log $WARNING "4) GCC (PIC32MX) only"
+            log $WARNING "5) SDCC and XC8 (PIC16F and PIC18F) only"
+            log $WARNING "6) all (SDCC, XC8 and GCC)"
+
+        fi
+
+    fi
+
+    echo -e -n "\e[31;1m >\e[05m"
+    read what
+    echo -e -n "\e[00m"
+
+    if [ "${REL}" == "stable" ]; then
+
+        case $what in
+            2)  COMP=$SDCC
+                STEP=33 ;;
+            3)  COMP=$GCC
+                STEP=33 ;;
+            4)  COMP=$((SDCC|GCC))
+                STEP=25 ;;
+            *)  COMP=$NONE
+                STEP=50 ;;
+        esac
+
+    else
+
+        case $what in
+            2)  COMP=$SDCC
+                STEP=33 ;;
+            3)  COMP=$XC8
+                STEP=33 ;;
+            4)  COMP=$GCC
+                STEP=33 ;;
+            5)  COMP=$((SDCC|XC8))
+                STEP=25 ;;
+            6)  COMP=$((SDCC|XC8|GCC))
+                STEP=20 ;;
+            *)  COMP=$NONE
+                STEP=50 ;;
+        esac
+
+    fi
 
 fi
-
-echo -e -n "\e[31;1m >\e[05m"
-read what
-echo -e -n "\e[00m"
-
-case $what in
-    2)  COMP=$SDCC
-        STEP=33 ;;
-    3)  COMP=$XC8
-        STEP=33 ;;
-    4)  COMP=$GCC
-        STEP=33 ;;
-    5)  COMP=$((SDCC|XC8))
-        STEP=25 ;;
-    6)  COMP=$((SDCC|XC8|GCC))
-        STEP=20 ;;
-    *)  COMP=$NONE
-        STEP=50 ;;
-esac
 
 ########################################################################
 
@@ -261,7 +326,7 @@ fi
 
 if [ ${DOWNLOAD} ]; then
 
-    log $NORMAL "Downloading packages ..."
+    log $WARNING "Downloading packages ..."
 
     i=0
 
@@ -285,8 +350,6 @@ if [ ${DOWNLOAD} ]; then
     esac
     cd ${REL}
 
-    println
-
 fi
 
 # INSTALL
@@ -294,7 +357,7 @@ fi
 
 if [ ${INSTALL} ]; then
 
-    log $NORMAL "Installing packages ..."
+    log $WARNING "Installing packages ..."
 
     i=0
 
@@ -318,15 +381,30 @@ if [ ${INSTALL} ]; then
     esac
     cd ${REL}
 
-    println
-
 fi
 
 # POSTINSTALL
 ########################################################################
 
 if [ "${REL}" == "stable" ]; then
-    python /opt/pinguino/v${STABLE}/post_install.py
+    python /opt/pinguino/v${STABLE}/post_install.py > /dev/null 2>&1
+#else
+    #python /opt/pinguino/v${TESTING}/pinguino/pinguino_reset.py
+    #python /opt/pinguino/v${TESTING}/cmd/pinguino-reset.py
+fi
+
+# UPDATE LINUX CONFIG FILE
+########################################################################
+
+if [ ${NEWXC8VER} ]; then
+
+    PCONF=/opt/pinguino/v${TESTING}/pinguino/qtgui/config/pinguino.linux.conf
+    CURXC8VER=v1.$(cat $PCONF | grep -Po '(?<=v1.)\d\d')
+    if [ "${NEWXC8VER}" != "${CURXC8VER}" ]; then
+        log $WARNING Updating XC8 ${CURXC8VER} to ${NEWXC8VER}
+        sed -i -e "s/${CURXC8VER}/${NEWXC8VER}/g" ${PCONF}
+        #cat ${PCONF}
+    fi
 fi
 
 # LAUNCH
