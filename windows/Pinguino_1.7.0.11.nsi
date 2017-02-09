@@ -9,6 +9,7 @@
 ; TODO
 ; Better Operating System detection, cf. http://nsis.sourceforge.net/Get_Windows_version
 ; Compiler Uninstaller
+; Updating XC8 to the latest version
 ;-----------------------------------------------------------------------
 ; To compile this script : makensis(.exe) Pinguino_x.x.x.x.nsi
 ;-----------------------------------------------------------------------
@@ -36,13 +37,13 @@ ShowInstDetails show					;Show installation logs
 ;Defines
 ;-----------------------------------------------------------------------
 
-!define INSTALLER_VERSION				'1.7.0.7'
-!define PYTHON_VERSION					'2.7.10'
-!define PYUSB_VERSION					'1.0.0rc1'
-!define PYSIDE_VERSION					'1.2.2'
-!define LIBUSB_VERSION					'1.0.20'
+!define INSTALLER_VERSION				'1.7.0.11'
+!define PYTHON_VERSION					'2.7.12'
+;!define PYUSB_VERSION					'1.0.0rc1'
+;!define PYSIDE_VERSION					'1.2.2'
+;!define LIBUSB_VERSION					'1.0.20'
 !define LIBUSBWIN32_VERSION				'1.2.6.0'
-!define XC8_VERSION						'1.36'
+!define XC8_VERSION						'1.38'
 
 !define PINGUINO_NAME					'Pinguino'
 !define PINGUINO_STABLE					'11'
@@ -373,16 +374,7 @@ Section "Install"
     ;Detect and install Python, Pip and Pip modules ......
     Call InstallPython
     Call InstallPip
-    Call InstallPySide
-    Call InstallPyUSB
-    Call InstallWheel
 
-    ${if} $pinguino_version = "11"
-        Call InstallBS4
-    ${else}
-        Call InstallSetuptools
-    ${endif}
-    
     ;Get Pinguino last update
     Call InstallPinguino
 
@@ -616,7 +608,7 @@ Function InstallPython
 FunctionEnd
 
 ;-----------------------------------------------------------------------
-; Detect and install Pip.
+; Detect, install or upgrade Pip, PySide, PyUSB, Wheel, BeautifullSoup4, Setuptools
 ; Note Pip is already installed when Python version > 2.7.9.
 ; The installer just need to update it
 ;-----------------------------------------------------------------------
@@ -642,124 +634,13 @@ Function InstallPip
 
     Update:
     ;Update PIP
-    ExecWait '"$Python27Path\python" -m pip install -U pip' $0
+    ExecWait '"$Python27Path\python" -m pip install --upgrade pip pyside pyusb wheel beautifulsoup4 setuptools' $0
     StrCmp $0 "0" Done
     Abort "PyPIP $(E_installing) $0!"
 
     Done: 
-    DetailPrint "PyPIP $(msg_installed)"
+    DetailPrint "Python dependencies $(msg_installed)"
 
-FunctionEnd
-
-;-----------------------------------------------------------------------
-; Detect and install PySide.
-;-----------------------------------------------------------------------
-
-Function InstallPySide
-
-    ;Check if PySide is installed
-    IfFileExists "$Python27Path\Lib\site-packages\PySide\__init__.py" Done +1
-
-    ;Install PySide
-    DetailPrint "PySide $(msg_not_detected)"
-    nsExec::Exec '"$Python27Path\Scripts\pip.exe" install pyside'
-    Pop $0
-    StrCmp $0 "0" Done
-    Abort "Wheel $(E_installing) $0!"
-
-    Done:
-    DetailPrint "PySide $(msg_installed)"
-
-FunctionEnd
-
-;-----------------------------------------------------------------------
-; Detect and install PyUSB.
-;-----------------------------------------------------------------------
-
-Function InstallPyUSB
-
-    ;Check if PyUSB is installed
-    IfFileExists "$Python27Path\Lib\site-packages\usb\__init__.py" Done +1
-
-    ;Install PyUSB
-    DetailPrint "PyUSB $(msg_not_detected)"
-    nsExec::Exec '"$Python27Path\Scripts\pip.exe" install pyusb==${PYUSB_VERSION}'
-    Pop $0
-    StrCmp $0 "0" Done
-    Abort "PyUSB $(E_installing) $0!"
-
-    Done:
-    DetailPrint "PyUSB $(msg_installed)"
-
-FunctionEnd
-
-;-----------------------------------------------------------------------
-; Detect and install Wheel.
-;-----------------------------------------------------------------------
-
-Function InstallWheel
-
-    ;Check if Wheel is installed
-    IfFileExists "$Python27Path\Scripts\wheel.exe" Done +1
-
-    ;Install Wheel
-    DetailPrint "Wheel $(msg_not_detected)"
-    ;nsExec::Exec '"$Python27Path\Scripts\pip.exe" install wheel'
-    nsExec::Exec '"$Python27Path\python" -m pip install wheel'
-
-    Pop $0
-    StrCmp $0 "0" Done
-    Abort "Wheel $(E_installing) $0!"
-
-    Done:
-    DetailPrint "Wheel $(msg_installed)"
-
-FunctionEnd
-
-;-----------------------------------------------------------------------
-; Detect and install Python BeautifullSoup4.
-;-----------------------------------------------------------------------
-
-Function InstallBS4
-    
-    ;Check if BeautifullSoup4 is installed
-    IfFileExists "$Python27Path\Lib\site-packages\bs4\__init__.py" Done +1
-
-    ;Install BS4
-    DetailPrint "BeautifullSoup4 $(msg_not_detected)"
-    ;nsExec::Exec '"$Python27Path\Scripts\pip.exe" install beautifulsoup4'
-    nsExec::Exec '"$Python27Path\python" -m pip install beautifulsoup4'
-
-    Pop $0
-    StrCmp $0 "0" Done
-    Abort "beautifulsoup4 $(E_installing) $0!"
-    
-    Done:
-    DetailPrint "BeautifullSoup4 $(msg_installed)"
-
-FunctionEnd
-
-;-----------------------------------------------------------------------
-; Detect and install Python Setuptools.
-;-----------------------------------------------------------------------
-
-Function InstallSetuptools
-
-    ;Check if Setuptools is installed
-    IfFileExists "$Python27Path\Lib\site-packages\setuptools\__init__.py" Done +1
-
-    ;Install Setuptools
-    DetailPrint "Setuptools $(msg_not_detected)"
-    ;nsExec::Exec '"$Python27Path\Scripts\pip.exe" install setuptools'
-    nsExec::Exec '"$Python27Path\python" -m pip install setuptools'
-
-    Pop $0
-    StrCmp $0 "0" Done
-    Abort "Wheel $(E_installing) $0!"
-
-    Done:
-    DetailPrint "Setuptools $(msg_installed)"
-    
 FunctionEnd
 
 ;-----------------------------------------------------------------------
@@ -1071,8 +952,19 @@ Function InstallComplete
 
     StrCmp $pinguino_version ${PINGUINO_TESTING} 0 Stable
 
+    ;Update pinguino.bat
+    DetailPrint "Updating pinguino.bat ..."
+    FileOpen  $0 "$INSTDIR\pinguino.bat" w
+    FileWrite $0 "@ECHO OFF"
+    FileWrite $0 "$\r$\n"
+    FileWrite $0 "CD $INSTDIR\"
+    FileWrite $0 "$\r$\n"
+    FileWrite $0 "$Python27Path\python pinguino.py"
+    FileWrite $0 "$\r$\n"
+    FileClose $0
+
     ;Execute pinguino-ide post_install routine...
-    ExecWait '"$Python27Path\python" "$INSTDIR\pinguino\pinguino_reset.py"' $0
+    ExecWait '"$Python27Path\python" "$Python27Path\Scripts\pinguino-reset.py"' $0
     StrCmp $0 "0" Done
     Abort "post_install $(E_installing) $0!"
 

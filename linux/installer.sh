@@ -3,10 +3,11 @@
 # ----------------------------------------------------------------------
 # description:      Pinguino IDE Install Script
 # author:           regis blanchot <rblanchot@gmail.com>
-# first release:    25-04-2014
 # ----------------------------------------------------------------------
 # CHANGELOG
 # ----------------------------------------------------------------------
+# 31-12-2016 : added pinguino.conf updating
+# 05-10-2016 : changed installations order : compilers first
 # 11-08-2016 : added pinguino.linux.conf updating
 # 11-08-2016 : added latest XC8 version downloading
 # 11-08-2016 : fixed XC8 installation by removing "/dev/null" direction 
@@ -15,6 +16,7 @@
 # 09-05-2016 : added "--mode text" option to XC8 installer
 # 11-05-2016 : added update option to run git
 # 31-03-2016 : removed wget "--show-progress" option (not supported on all Linux distro)
+# 25-04-2014 : first release    
 # ----------------------------------------------------------------------
 # TODO
 # ----------------------------------------------------------------------
@@ -23,7 +25,7 @@
 # update or install all necessary python modules ? 
 # ----------------------------------------------------------------------
 
-VERSION=11-08-2016
+VERSION=31-12-2016
 
 DOWNLOAD=1
 INSTALL=1
@@ -37,8 +39,8 @@ DPKG=gdebi
 #XC8INST=xc8-v1.36-full-install-linux-installer.run
 XC8INST=mplabxc8linux
 
-# Pinguino location
-XC8DIR=www.microchip.com
+# XC8 compiler location
+XC8DIR=https://www.microchip.com
 # Pinguino location
 PDIR=/opt/pinguino
 # Pinguino Sourceforge location
@@ -328,7 +330,7 @@ if [ ${DOWNLOAD} ]; then
 
     log $WARNING "Downloading packages ..."
 
-    i=0
+    #i=0
 
     # Pinguino files
     
@@ -342,13 +344,13 @@ if [ ${DOWNLOAD} ]; then
 
     # Compilers
 
-    cd ..
+    #cd ..
     case 1 in
         $(( (COMP & SDCC) >0 )) ) fetch pinguino-linux${ARCH}-sdcc-mpic16.deb;;&
         $(( (COMP &  XC8) >0 )) ) fetch ${XC8INST};;&
         $(( (COMP &  GCC) >0 )) ) fetch pinguino-linux${ARCH}-gcc-mips-elf.deb;;&
     esac
-    cd ${REL}
+    #cd ${REL}
 
 fi
 
@@ -359,7 +361,18 @@ if [ ${INSTALL} ]; then
 
     log $WARNING "Installing packages ..."
 
-    i=0
+    #i=0
+
+    # Compilers (must be installed first)
+
+    #cd ..
+    case 1 in
+        $(( (COMP & SDCC) >0 )) ) install pinguino-linux${ARCH}-sdcc-mpic16.deb;;&
+        $(( (COMP &  XC8) >0 )) ) install ${XC8INST};;&
+        $(( (COMP &  GCC) >0 )) ) install pinguino-linux${ARCH}-gcc-mips-elf.deb;;&
+    esac
+    #1
+    #cd ${REL}
 
     # Pinguino files
     
@@ -371,16 +384,6 @@ if [ ${INSTALL} ]; then
 
     install pinguino-libraries.deb
 
-    # Compilers
-
-    cd ..
-    case 1 in
-        $(( (COMP & SDCC) >0 )) ) install pinguino-linux${ARCH}-sdcc-mpic16.deb;;&
-        $(( (COMP &  XC8) >0 )) ) install ${XC8INST};;&
-        $(( (COMP &  GCC) >0 )) ) install pinguino-linux${ARCH}-gcc-mips-elf.deb;;&
-    esac
-    cd ${REL}
-
 fi
 
 # POSTINSTALL
@@ -388,17 +391,25 @@ fi
 
 if [ "${REL}" == "stable" ]; then
     python /opt/pinguino/v${STABLE}/post_install.py > /dev/null 2>&1
-#else
-    #python /opt/pinguino/v${TESTING}/pinguino/pinguino_reset.py
+else
+    python /opt/pinguino/v${TESTING}/pinguino/pinguino_reset.py
     #python /opt/pinguino/v${TESTING}/cmd/pinguino-reset.py
 fi
 
-# UPDATE LINUX CONFIG FILE
+# UPDATE LINUX CONFIG FILES
 ########################################################################
 
 if [ ${NEWXC8VER} ]; then
 
     PCONF=/opt/pinguino/v${TESTING}/pinguino/qtgui/config/pinguino.linux.conf
+    CURXC8VER=v1.$(cat $PCONF | grep -Po '(?<=v1.)\d\d')
+    if [ "${NEWXC8VER}" != "${CURXC8VER}" ]; then
+        log $WARNING Updating XC8 ${CURXC8VER} to ${NEWXC8VER}
+        sed -i -e "s/${CURXC8VER}/${NEWXC8VER}/g" ${PCONF}
+        #cat ${PCONF}
+    fi
+
+    PCONF=~/Pinguino/v${TESTING}/pinguino.conf
     CURXC8VER=v1.$(cat $PCONF | grep -Po '(?<=v1.)\d\d')
     if [ "${NEWXC8VER}" != "${CURXC8VER}" ]; then
         log $WARNING Updating XC8 ${CURXC8VER} to ${NEWXC8VER}

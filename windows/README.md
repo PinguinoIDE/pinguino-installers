@@ -49,6 +49,15 @@ Tested on:
  
 ### Changelog
 
+v1.7.1.0
+* Moved Compilers in Program Files
+* Moved User data in User's Documents folder
+* New architecture detection
+v1.7.0.11
+* Fixed "WindowsError: [Error 6] The handle is invalid" for v12 on 32-bit
+  by replacing pythonw.exe by python.exe in pinguino.bat
+* Fixed pinguino-reset.py to pinguino-reset.pyc
+* Updated XC8 v1.36 to XC8 V1.38
 v1.7.0.10
 * Simplified all dependencies installation
 * Fixed PyUSB install
