@@ -1,58 +1,18 @@
 Pinguino-IDE Windows Installer
 ==============================
 
-### Features
-
-* Detects and installs all the required software for the Pinguino IDE.
-  + Python v2.7
-  + PySIDE
-  + PyPIP
-  + Wheel
-  + BeautifullSoup4
-  + Setuptools
-  + PyUSB
-  + LibUSB
-  + pinguino-ide package
-  + pinguino-libraries package
-  + Compilers packages
-  + Pinguino device drivers.
-* Allow semi-automatic Pinguino device drivers installation
-  +  8-bit Pinguino boards : VID 04D8 / PID FEAA
-  +  8-bit Pinguino boards : VID 04D8 / PID FEAB
-  + 32-bit Pinguino boards : VID 04D8 / PID 003C
-* Installer size: 1229 KB.
-* Multi-language: English, French, Italian, Portuguese and Spanish
-
-### TODO
-
-* Better Operating System detection, cf. http://nsis.sourceforge.net/Get_Windows_version
-* Improve compilers uninstaller page
-* Installation in user's own path
-
-### Supported OS
-
-* This installer should work fine on the following Microsoft O.S.:
-  + Windows XP (32-bits only).
-  + Windows Vista (32 and 64-bits).
-  + Windows 7 (32 and 64-bits).
-  + Windows 8 (32 and 64-bits).
-  + Windows 10 (32 and 64-bits).
-* Note: about 300Mb free space on disk required.
-
-Tested on:
-
-* Windows XP Professional SP2 and SP3 32-bit
-* Windows 7 Ultimate 32-bit
-* Windows 7 Premium 64-bit
-* Windows 8.1 32-bit
-* Windows 10 64-bit
- 
 ### Changelog
 
+v1.7.1.1
+* Fixed P32-gcc path issue
+* Fixed Desktop Icon
+* Fixed update-testing copy 
+* Uninstall any prior Pinguino Pip module
 v1.7.1.0
 * Moved Compilers in Program Files
 * Moved User data in User's Documents folder
 * New architecture detection
+* Install the latest XC8 version
 v1.7.0.11
 * Fixed "WindowsError: [Error 6] The handle is invalid" for v12 on 32-bit
   by replacing pythonw.exe by python.exe in pinguino.bat
@@ -129,6 +89,50 @@ v1.1.0.0
 v1.0.0.0
 * Test version
 
+### Features
+
+* Detects and installs all the required software for the Pinguino IDE.
+  + Python v2.7
+  + PySIDE
+  + PyPIP
+  + Wheel
+  + BeautifullSoup4
+  + Setuptools
+  + PyUSB
+  + LibUSB
+  + pinguino-ide package
+  + pinguino-libraries package
+  + Compilers packages
+  + Pinguino device drivers.
+* Allow semi-automatic Pinguino device drivers installation
+  +  8-bit Pinguino boards : VID 04D8 / PID FEAA
+  +  8-bit Pinguino boards : VID 04D8 / PID FEAB
+  + 32-bit Pinguino boards : VID 04D8 / PID 003C
+* Installer size: 1229 KB.
+* Multi-language: English, French, Italian, Portuguese and Spanish
+
+### TODO
+
+* ???
+
+### Supported OS
+
+* This installer should work fine on the following Microsoft O.S.:
+  + Windows XP (32-bits only).
+  + Windows Vista (32 and 64-bits).
+  + Windows 7 (32 and 64-bits).
+  + Windows 8 (32 and 64-bits).
+  + Windows 10 (32 and 64-bits).
+* Note: about 300Mb free space on disk required.
+
+Tested on:
+
+* Windows XP Professional SP2 and SP3 32-bit
+* Windows 7 Ultimate 32-bit
+* Windows 7 Premium 64-bit
+* Windows 8.1 32-bit
+* Windows 10 64-bit
+ 
 ### Help & Resources
 
 * Pinguino Site: http://www.pinguino.cc
