@@ -15,11 +15,11 @@
 ;-----------------------------------------------------------------------
 
 XPStyle on
-RequestExecutionLevel admin				;Request application privileges
+RequestExecutionLevel admin             ;Request application privileges
 SetDatablockOptimize on
 SetCompress force
 SetCompressor /SOLID lzma
-ShowInstDetails show					;Show installation logs
+ShowInstDetails show                    ;Show installation logs
 
 ;-----------------------------------------------------------------------
 ;Includes
@@ -38,80 +38,80 @@ ShowInstDetails show					;Show installation logs
 ;Defines
 ;-----------------------------------------------------------------------
 
-!define INSTALLER_VERSION				'1.7.1.2'
-!define PYTHON_VERSION					'2.7.13'
-!define LIBUSBWIN32_VERSION				'1.2.6.0'
+!define INSTALLER_VERSION               '1.7.1.2'
+!define PYTHON_VERSION                  '2.7.13'
+!define LIBUSBWIN32_VERSION             '1.2.6.0'
 
-!define PINGUINO_NAME					'Pinguino'
-!define PINGUINO_STABLE					'11'
-!define PINGUINO_TESTING				'12'
-!define PINGUINO_ICON					"pinguino11.ico"
-!define PINGUINO_BMP					"pinguino11.bmp"
-!define INSTALLER_NAME					'${PINGUINO_NAME}-installer'
-!define FILE_OWNER						'Pinguino'
-!define FILE_URL						'http://www.pinguino.cc'
+!define PINGUINO_NAME                   'Pinguino'
+!define PINGUINO_STABLE                 '11'
+!define PINGUINO_TESTING                '12'
+!define PINGUINO_ICON                   "pinguino11.ico"
+!define PINGUINO_BMP                    "pinguino11.bmp"
+!define INSTALLER_NAME                  '${PINGUINO_NAME}-installer'
+!define FILE_OWNER                      'Pinguino'
+!define FILE_URL                        'http://www.pinguino.cc'
 
-!define CURL							"curl.exe"
+!define CURL                            "curl.exe"
 
-!define PBS_MARQUEE						0x08
+!define PBS_MARQUEE                     0x08
 
 !define MUI_ABORTWARNING
-!define MUI_INSTFILESPAGE_PROGRESSBAR	"smooth"
-!define MUI_INSTFILESPAGE_COLORS		"00FF00 000000 " ; Green/Black Console Window
-!define MUI_ICON						${PINGUINO_ICON}
-!define MUI_UNICON						${PINGUINO_ICON}
-!define MUI_WELCOMEFINISHPAGE_BITMAP	${PINGUINO_BMP}
-!define MUI_UNWELCOMEFINISHPAGE_BITMAP	${PINGUINO_BMP}
+!define MUI_INSTFILESPAGE_PROGRESSBAR   "smooth"
+!define MUI_INSTFILESPAGE_COLORS        "00FF00 000000 " ; Green/Black Console Window
+!define MUI_ICON                        ${PINGUINO_ICON}
+!define MUI_UNICON                      ${PINGUINO_ICON}
+!define MUI_WELCOMEFINISHPAGE_BITMAP    ${PINGUINO_BMP}
+!define MUI_UNWELCOMEFINISHPAGE_BITMAP  ${PINGUINO_BMP}
 ;!define MUI_HEADERIMAGE
 ;!define MUI_HEADERIMAGE_RIGHT
-;!define MUI_HEADERIMAGE_BITMAP			${PINGUINO_BMP}
+;!define MUI_HEADERIMAGE_BITMAP         ${PINGUINO_BMP}
 
 !define MUI_FINISHPAGE_NOAUTOCLOSE
 !define MUI_FINISHPAGE_RUN
 !define MUI_FINISHPAGE_RUN_NOTCHECKED
-!define MUI_FINISHPAGE_RUN_TEXT			"Start ${PINGUINO_NAME}"
-!define MUI_FINISHPAGE_RUN_FUNCTION		"LaunchPinguinoIDE"
+!define MUI_FINISHPAGE_RUN_TEXT         "Start ${PINGUINO_NAME}"
+!define MUI_FINISHPAGE_RUN_FUNCTION     "LaunchPinguinoIDE"
 !define MUI_FINISHPAGE_SHOWREADME_NOTCHECKED
 ;!define MUI_FINISHPAGE_SHOWREADME $INSTDIR\README.md
 
-!define REG_UNINSTALL					"SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\${PINGUINO_NAME}"
-!define REG_PINGUINO					"SOFTWARE\${PINGUINO_NAME}"
+!define REG_UNINSTALL                   "SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\${PINGUINO_NAME}"
+!define REG_PINGUINO                    "SOFTWARE\${PINGUINO_NAME}"
 !define REG_XC8                         "SOFTWARE\Microchip\MPLAB XC8 C Compiler"
 !define REG_PYTHON27                    "SOFTWARE\Python\PythonCore\2.7\InstallPath"
 
-!define URL_SFBASE					    "https://sourceforge.net/projects/pinguinoide/files"
-!define URL_SFOS						"${URL_SFBASE}/windows"
-!define URL_MCHP						"http://www.microchip.com"
+!define URL_SFBASE                      "https://sourceforge.net/projects/pinguinoide/files"
+!define URL_SFOS                        "${URL_SFBASE}/windows"
+!define URL_MCHP                        "http://www.microchip.com"
 !define URL_LIBUSB                      "https://sourceforge.net/projects/libusb-win32/files/libusb-win32-releases"
 !define URL_PYTHON                      "https://www.python.org/ftp/python"
 !define URL_PYTHONPIP                   "https://bootstrap.pypa.io"
-!define PyPIP							"get-pip.py"
+!define PyPIP                           "get-pip.py"
 
-!define pinguino-ide					"pinguino-ide.zip"
-!define pinguino-libraries				"pinguino-libraries.zip"
-!define pinguino-xc8					"xc8-v${XC8_VERSION}-full-install-windows-installer.exe"
+!define pinguino-ide                    "pinguino-ide.zip"
+!define pinguino-libraries              "pinguino-libraries.zip"
+!define pinguino-xc8                    "xc8-v${XC8_VERSION}-full-install-windows-installer.exe"
 !define pinguino-xc8-latest             "mplabxc8windows"
-!define pinguino-sdcc32					"pinguino-windows32-sdcc-mpic16.zip"
-!define pinguino-sdcc64					"pinguino-windows64-sdcc-mpic16.zip"
-!define pinguino-gcc32					"pinguino-windows32-gcc-mips-elf.zip"
-!define pinguino-gcc64					"pinguino-windows64-gcc-mips-elf.zip"
+!define pinguino-sdcc32                 "pinguino-windows32-sdcc-mpic16.zip"
+!define pinguino-sdcc64                 "pinguino-windows64-sdcc-mpic16.zip"
+!define pinguino-gcc32                  "pinguino-windows32-gcc-mips-elf.zip"
+!define pinguino-gcc64                  "pinguino-windows64-gcc-mips-elf.zip"
 
 ;-----------------------------------------------------------------------
 ;General Settings
 ;-----------------------------------------------------------------------
 
-Name									'${PINGUINO_NAME}'
+Name                                    '${PINGUINO_NAME}'
 ;Sets the default value of $INSTDIR, in case no other values can be found.
-InstallDir								'C:\${PINGUINO_NAME}'
-OutFile									'${INSTALLER_NAME}-v${INSTALLER_VERSION}.exe'
-BrandingText							'${FILE_URL}'
+InstallDir                              'C:\${PINGUINO_NAME}'
+OutFile                                 '${INSTALLER_NAME}-v${INSTALLER_VERSION}.exe'
+BrandingText                            '${FILE_URL}'
 
-VIAddVersionKey "ProductName"       	'${INSTALLER_NAME}'
-VIAddVersionKey "ProductVersion"    	'${INSTALLER_VERSION}'
-VIAddVersionKey "CompanyName"       	'${FILE_OWNER}'
-VIAddVersionKey "LegalCopyright"    	'2014-2017 ${FILE_OWNER}'
-VIAddVersionKey "FileDescription"   	'Pinguino IDE & Compilers Installer'
-VIAddVersionKey "FileVersion"       	'${INSTALLER_VERSION}'
+VIAddVersionKey "ProductName"           '${INSTALLER_NAME}'
+VIAddVersionKey "ProductVersion"        '${INSTALLER_VERSION}'
+VIAddVersionKey "CompanyName"           '${FILE_OWNER}'
+VIAddVersionKey "LegalCopyright"        '2014-2017 ${FILE_OWNER}'
+VIAddVersionKey "FileDescription"       'Pinguino IDE & Compilers Installer'
+VIAddVersionKey "FileVersion"           '${INSTALLER_VERSION}'
 VIProductVersion ${INSTALLER_VERSION}
 
 ;-----------------------------------------------------------------------
@@ -120,8 +120,8 @@ VIProductVersion ${INSTALLER_VERSION}
 
 ;Installer
 !insertmacro MUI_PAGE_WELCOME           ; Displays a welcome message
-!insertmacro MUI_PAGE_LICENSE			"LICENSE"
-!insertmacro MUI_PAGE_LICENSE			"DISCLAIMER"
+!insertmacro MUI_PAGE_LICENSE           "LICENSE"
+!insertmacro MUI_PAGE_LICENSE           "DISCLAIMER"
 Page Custom  PAGE_RELEASE PAGE_RELEASE_LEAVE    ; Which Release ?
 !insertmacro MUI_PAGE_DIRECTORY         ; Install path
 Page Custom  PAGE_COMPILER PAGE_COMPILER_LEAVE  ; Which Compilers ?
@@ -270,19 +270,19 @@ LangString E_failed ${LANG_FRENCH} "a échoué. Erreur:"
 ;Variables
 ;-----------------------------------------------------------------------
 
-;Var /GLOBAL os_platform					; 32- or 64-bit OS
-;Var /GLOBAL os_version					; Windows XP, Vista, 7, 8 or 10
-Var /GLOBAL PINGUINO_RELEASE			; stable or testing
-Var /GLOBAL PINGUINO_VERSION			; 11 or 12
+;Var /GLOBAL os_platform                    ; 32- or 64-bit OS
+;Var /GLOBAL os_version                 ; Windows XP, Vista, 7, 8 or 10
+Var /GLOBAL PINGUINO_RELEASE            ; stable or testing
+Var /GLOBAL PINGUINO_VERSION            ; 11 or 12
 Var /GLOBAL pinguino_actual_version
 Var /GLOBAL pinguino_last_version
-Var /GLOBAL SourceForge					; Path to SourceForge repository
-Var /GLOBAL UserPath				    ; Path to the Pinguino user data
-Var /GLOBAL XC8_VERSION					; 1.40
-Var /GLOBAL XC8_PATH					; Path to the XC8 compiler
-Var /GLOBAL Python27Path				; Path to Python 2.7
-Var /GLOBAL url							; Used by Download Macro
-Var /GLOBAL program						; Used by Download Macro
+Var /GLOBAL SourceForge                 ; Path to SourceForge repository
+Var /GLOBAL UserPath                    ; Path to the Pinguino user data
+Var /GLOBAL XC8_VERSION                 ; 1.40
+Var /GLOBAL XC8_PATH                    ; Path to the XC8 compiler
+Var /GLOBAL Python27Path                ; Path to Python 2.7
+Var /GLOBAL url                         ; Used by Download Macro
+Var /GLOBAL program                     ; Used by Download Macro
 ;Var hwnd
 
 ;-----------------------------------------------------------------------
@@ -298,7 +298,7 @@ Var /GLOBAL program						; Used by Download Macro
 
 ;-----------------------------------------------------------------------
 ;Start
-;AGentric : "" must be removed from XC8_PATH
+;Fixed : AGentric reported that "" must be removed from XC8_PATH
 ;-----------------------------------------------------------------------
 
 Function .onInit
@@ -308,18 +308,13 @@ Function .onInit
 
     ;Detect the architecture of host system (32 or 64 bits)
     ;and set Pinguino default path
-    ${if} ${RunningX64}
+    ${If} ${RunningX64}
         SetRegView 64
         StrCpy $INSTDIR '$PROGRAMFILES64\${PINGUINO_NAME}'
-    ${else}
+    ${Else}
         SetRegView 32
         StrCpy $INSTDIR '$PROGRAMFILES32\${PINGUINO_NAME}'
     ${endif}
-
-    ;XC8 default path. Will be updated in InstallXC8.
-    ;Note that XC8 is a 32-bit program.
-    StrCpy $XC8_VERSION '1.40'
-    StrCpy $XC8_PATH '$PROGRAMFILES32\Microchip\xc8\v$XC8_VERSION'
 
     ;Embed files
     SetOutPath $EXEDIR
@@ -372,13 +367,32 @@ Section "Install"
     SetOutPath $INSTDIR
 
     ;Install Compilers ($R0, $R1 and $R2 are checkboxes results)
-    StrCmp $R0 "0" +2
+    
+    SDCC:
+    StrCmp $R0 "0" XC8
     Call InstallSDCC
 
-    StrCmp $PINGUINO_VERSION "11" +3
-    StrCmp $R1 "0" +2
+    XC8:
+    ;Only v12 and upon can use the XC8 compiler
+    StrCmp $PINGUINO_VERSION "11" GCC
+    StrCmp $R1 "0" NOTXC8
     Call InstallXC8
 
+    NOTXC8:
+    ;User don't want to install XC8
+    ;Let's check if XC8 has been already installed
+    ;We look in the registry database
+    ReadRegStr $XC8_VERSION HKLM "${REG_XC8}" "Version"
+    ReadRegStr $XC8_PATH HKLM "${REG_XC8}" "Location"
+
+    ${If} $XC8_VERSION == ""
+    DetailPrint "XC8 not found"
+    ${Else}
+    DetailPrint "XC8 v$XC8_VERSION path is $XC8_PATH"
+    DetailPrint "XC8 v$XC8_VERSION $(msg_installed)"
+    ${Endif}
+
+    GCC:
     StrCmp $R2 "0" +2
     Call InstallGCC
 
@@ -418,7 +432,7 @@ Function PAGE_RELEASE
 
     nsDialogs::Create 1018
     Pop $0
-    ${if} $0 = error
+    ${If} $0 == error
         Abort
     ${endif}
     
@@ -430,11 +444,11 @@ Function PAGE_RELEASE
     ${NSD_CreateRadioButton} 250 125 100% 10u "Testing (v${PINGUINO_TESTING})"
     Pop $RELEASE_TESTING
 
-    ${if} $RELEASE_STATE = 1
+    ${If} $RELEASE_STATE == 1
 
         ${NSD_SetState} $RELEASE_TESTING  ${BM_SETCHECK}
 
-    ${else}
+    ${Else}
 
         ${NSD_SetState} $RELEASE_STABLE  ${BM_SETCHECK}
 
@@ -453,13 +467,13 @@ Function PAGE_RELEASE_LEAVE
     ${NSD_GetState} $RELEASE_STABLE  $R0
     ${NSD_GetState} $RELEASE_TESTING $R1
 
-    ${if} $R0 = 1
+    ${If} $R0 == 1
 
         StrCpy $PINGUINO_VERSION ${PINGUINO_STABLE}
         StrCpy $PINGUINO_RELEASE "stable"
         StrCpy $RELEASE_STATE 1
 
-    ${else}
+    ${Else}
 
         StrCpy $PINGUINO_VERSION ${PINGUINO_TESTING}
         StrCpy $PINGUINO_RELEASE "testing"
@@ -486,7 +500,7 @@ Function PAGE_COMPILER
 
     nsDialogs::Create 1018
     Pop $0
-    ${if} $0 = error
+    ${If} $0 == error
         Abort
     ${endif}
     
@@ -495,7 +509,7 @@ Function PAGE_COMPILER
     ${NSD_CreateCheckBox} 250 50 100% 10u  "SDCC for PIC18F"
     Pop $COMPILERS_SDCC
     
-    ;${if} $PINGUINO_VERSION != "11"
+    ;${If} $PINGUINO_VERSION != "11"
     StrCmp $PINGUINO_VERSION "11" +3
     ${NSD_CreateCheckBox} 250 100 100% 10u "XC8 for PIC16F and PIC18F"
     Pop $COMPILERS_XC8
@@ -538,7 +552,7 @@ Function StrTrim
     StrCmp "$R2" "$\t" TrimLeft
     GoTo Loop2
     
-    TrimLeft:	
+    TrimLeft:   
     StrCpy $R1 "$R1" "" 1
     Goto Loop
  
@@ -551,7 +565,7 @@ Function StrTrim
     StrCmp "$R2" "$\t" TrimRight
     GoTo Done
 
-    TrimRight:	
+    TrimRight:  
     StrCpy $R1 "$R1" -1
     Goto Loop2
  
@@ -577,7 +591,7 @@ Function Download
 
     Marquee::start /NOUNLOAD /swing /step=1 /scrolls=1 /top=0 /height=18 /width=-1 "$(msg_downloading) $program ..."
     DetailPrint "$(msg_downloading) $program ..."
-	Start:
+    Start:
     ClearErrors
     nsExec::ExecToLog '"$EXEDIR\curl.exe" --progress-bar -Lk $url/$program -o "$EXEDIR\$program"'
     Pop $0
@@ -585,9 +599,9 @@ Function Download
     ;Abort "$program $(E_downloading) $0!"
     DetailPrint "$program $(E_downloading) $0!"
     DetailPrint "We try again."
-	GoTo Start
+    GoTo Start
 
-	Done:
+    Done:
     DetailPrint "$program $(msg_downloaded)"
     Marquee::stop
 
@@ -607,16 +621,16 @@ Function InstallPython
     DetailPrint "Python v2.7 $(msg_not_detected)"
     StrCpy $url "${URL_PYTHON}/${PYTHON_VERSION}"
 
-    ${if} ${RunningX64}
+    ${If} ${RunningX64}
     StrCpy $program 'python-${PYTHON_VERSION}.amd64.msi'
-    ${else}
+    ${Else}
     StrCpy $program 'python-${PYTHON_VERSION}.msi'
     ${endif}
     Call Download
 
     ;Install Python
     ExecWait '"msiexec" /i "$EXEDIR\$program"' $0
-    ${if} $0 != "0"
+    ${If} $0 != "0"
         Abort "Python v2.7 $(E_installing) $0!"
     ${endif}
     ReadRegStr $0 HKLM "${REG_PYTHON27}" ""
@@ -676,12 +690,12 @@ FunctionEnd
 Function InstallPinguino
 
     ;get the installed version
-    ${if} ${FileExists} "$INSTDIR\v$PINGUINO_VERSION\update-$PINGUINO_RELEASE"
+    ${If} ${FileExists} "$INSTDIR\v$PINGUINO_VERSION\update-$PINGUINO_RELEASE"
         FileOpen  $0 "$INSTDIR\v$PINGUINO_VERSION\update-$PINGUINO_RELEASE" r
         FileRead  $0 $1
         FileClose $0
         ${StrTrim} $pinguino_actual_version $1
-    ${else}
+    ${Else}
         ;DetailPrint "*** update not found ***"
         StrCpy $pinguino_actual_version 'unknown'
     ${endif}
@@ -693,12 +707,12 @@ Function InstallPinguino
     StrCpy $program "update-$PINGUINO_RELEASE"
     Call Download
 
-    ${if} ${FileExists} "$EXEDIR\update-$PINGUINO_RELEASE"
+    ${If} ${FileExists} "$EXEDIR\update-$PINGUINO_RELEASE"
         FileOpen  $0 "$EXEDIR\update-$PINGUINO_RELEASE" r
         FileRead  $0 $1
         FileClose $0
         ${StrTrim} $pinguino_last_version $1
-    ${else}
+    ${Else}
         StrCpy $pinguino_last_version 'unknown'
     ${endif}
 
@@ -828,9 +842,9 @@ Function InstallSDCC
 
     ;Download SDCC
     StrCpy $url ${URL_SFOS}
-    ${if} ${RunningX64}
+    ${If} ${RunningX64}
     StrCpy $program ${pinguino-sdcc64}
-    ${else}
+    ${Else}
     StrCpy $program ${pinguino-sdcc32}
     ${endif}
     Call Download
@@ -884,9 +898,9 @@ Function InstallGCC
 
     ;Download GCC for Pinguino
     StrCpy $url ${URL_SFOS}
-    ${if} ${RunningX64}
+    ${If} ${RunningX64}
     StrCpy $program ${pinguino-gcc64}
-    ${else}
+    ${Else}
     StrCpy $program ${pinguino-gcc32}
     ${endif}
     Call Download
@@ -975,7 +989,7 @@ Function InstallComplete
     ;Delete "$Python27Path\Lib\site-packages\pinguino\qtgui\config\pinguino.windows.conf"
     ;Rename "$INSTDIR\pinguino.windows.conf" "$Python27Path\Lib\site-packages\pinguino\qtgui\config\pinguino.windows.conf"
 
-    ${if} $PINGUINO_VERSION = ${PINGUINO_TESTING}
+    ${If} $PINGUINO_VERSION == ${PINGUINO_TESTING}
 
         ;Update pinguino.bat
         DetailPrint "Updating pinguino.bat ..."
@@ -995,7 +1009,7 @@ Function InstallComplete
         StrCmp $0 "0" Done
         DetailPrint "Post-installation $(E_failed) $0!"
 
-    ${else}
+    ${Else}
     
         ;Update pinguino.bat
         DetailPrint "Updating pinguino.bat ..."
