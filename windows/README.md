@@ -3,6 +3,9 @@ Pinguino-IDE Windows Installer
 
 ### Changelog
 
+v1.7.1.2
+* Fixed Sourceforge timeout issue
+* Changed shortcut CONTROL|ALT|P (equivalent to ALTGR|P under Windows) to CTRL|SHIFT|P
 v1.7.1.1
 * Fixed P32-gcc path issue
 * Fixed Desktop Icon
