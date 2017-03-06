@@ -6,6 +6,7 @@ Pinguino-IDE Windows Installer
 v1.7.1.2
 * Fixed Sourceforge timeout issue
 * Changed shortcut CONTROL|ALT|P (equivalent to ALTGR|P under Windows) to CTRL|SHIFT|P
+* Fixed XC8_VERSION and XC8_PATH in Pinguino Config. file when user don't want to install XC8
 v1.7.1.1
 * Fixed P32-gcc path issue
 * Fixed Desktop Icon
