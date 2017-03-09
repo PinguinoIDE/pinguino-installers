@@ -7,11 +7,11 @@
 ; CHANGELOG (see README.md)
 ;-----------------------------------------------------------------------
 ; TODO
-; Better Operating System detection, cf. http://nsis.sourceforge.net/Get_Windows_version
-; Compiler Uninstaller
-; Updating XC8 to the latest version
+; Compilers Uninstaller ?
 ;-----------------------------------------------------------------------
-; To compile this script : makensis(.exe) Pinguino_x.x.x.x.nsi
+; To compile this script you'll need version 3 or above of NSIS :
+; http://nsis.sourceforge.net/Download
+; > makensis(.exe) Pinguino_x.x.x.x.nsi
 ;-----------------------------------------------------------------------
 
 XPStyle on
@@ -289,12 +289,12 @@ Var /GLOBAL program                     ; Used by Download Macro
 ;Delete a file
 ;-----------------------------------------------------------------------
 
-!macro Remove file
-
-    Delete "$EXEDIR\$file"
-    DetailPrint "$file $(msg_deleted)"
-
-!macroend
+;!macro Remove file
+;
+;    Delete "$EXEDIR\$file"
+;    DetailPrint "$file $(msg_deleted)"
+;
+;!macroend
 
 ;-----------------------------------------------------------------------
 ;Start
@@ -338,8 +338,14 @@ Section "Uninstall"
     ;Uninstall for all users
     SetShellVarContext all
 
-    ;Delete the install directory
-    RMDir /r /REBOOTOK "$INSTDIR\"
+    ;Always delete uninstaller first
+    Delete "$INSTDIR\v$PINGUINO_VERSION\pinguino-uninstaller.exe"
+ 
+    ;Delete the install directory (but not the compilers)
+    RMDir /r /REBOOTOK "$INSTDIR\v$PINGUINO_VERSION\"
+
+    ;Delete the user directory
+    RMDir /r /REBOOTOK "$DOCUMENTS\${PINGUINO_NAME}\v$PINGUINO_VERSION\"
 
     ;Delete Desktop Icon
     Delete "$DESKTOP\pinguino-ide.lnk"
@@ -578,9 +584,9 @@ FunctionEnd
 !define StrTrim "!insertmacro StrTrim"
  
 !macro StrTrim ResultVar String
-  Push "${String}"
-  Call StrTrim
-  Pop "${ResultVar}"
+    Push "${String}"
+    Call StrTrim
+    Pop "${ResultVar}"
 !macroend
 
 ;-----------------------------------------------------------------------
@@ -589,6 +595,11 @@ FunctionEnd
 
 Function Download
 
+    ; Swap the TOP TWO values of the stack
+    Exch
+    Pop $url
+    Pop $program
+    
     Marquee::start /NOUNLOAD /swing /step=1 /scrolls=1 /top=0 /height=18 /width=-1 "$(msg_downloading) $program ..."
     DetailPrint "$(msg_downloading) $program ..."
     Start:
@@ -607,6 +618,14 @@ Function Download
 
 FunctionEnd
 
+!define Download "!insertmacro StrTrim"
+ 
+!macro Download URL PROGRAM
+    Push "${URL}"
+    Push "${PROGRAM}"
+    Call Download
+!macroend
+
 ;-----------------------------------------------------------------------
 ; Python v2.7 detection and installation routine.
 ;-----------------------------------------------------------------------
@@ -619,14 +638,12 @@ Function InstallPython
 
     ;Download the Python installer
     DetailPrint "Python v2.7 $(msg_not_detected)"
-    StrCpy $url "${URL_PYTHON}/${PYTHON_VERSION}"
 
     ${If} ${RunningX64}
-    StrCpy $program 'python-${PYTHON_VERSION}.amd64.msi'
+    ${Download} "${URL_PYTHON}/${PYTHON_VERSION}" 'python-${PYTHON_VERSION}.amd64.msi'
     ${Else}
-    StrCpy $program 'python-${PYTHON_VERSION}.msi'
+    ${Download} "${URL_PYTHON}/${PYTHON_VERSION}" 'python-${PYTHON_VERSION}.msi'
     ${endif}
-    Call Download
 
     ;Install Python
     ExecWait '"msiexec" /i "$EXEDIR\$program"' $0
@@ -658,9 +675,7 @@ Function InstallPythonDep
     ;Download PIP
     DetailPrint "PyPIP $(msg_not_detected)"
     ;SetOutPath "$TEMP"
-    StrCpy $url "${URL_PYTHONPIP}"
-    StrCpy $program "${PyPIP}"
-    Call Download
+    ${Download} ${URL_PYTHONPIP} ${PyPIP}
 
     ;Install PIP
     ;ExecWait '"$Python27Path\python" "$TEMP\${PyPIP}"' $0
@@ -671,7 +686,7 @@ Function InstallPythonDep
 
     Update:
     ;Update PIP and dependencies
-    ExecWait '"$Python27Path\python" -m pip install --upgrade pip pyside pyusb wheel beautifulsoup4 setuptools' $0
+    ExecWait '"$Python27Path\python" -m pip install --upgrade pip pyside pyusb wheel beautifulsoup4 setuptools requests' $0
     StrCmp $0 "0" Done
     Abort "Python dependencies $(E_installing) $0!"
 
@@ -703,9 +718,7 @@ Function InstallPinguino
     DetailPrint "Pinguino last update $pinguino_actual_version"
 
     ;get the latest version
-    StrCpy $url ${URL_SFBASE}
-    StrCpy $program "update-$PINGUINO_RELEASE"
-    Call Download
+    ${Download} ${URL_SFBASE} "update-$PINGUINO_RELEASE"
 
     ${If} ${FileExists} "$EXEDIR\update-$PINGUINO_RELEASE"
         FileOpen  $0 "$EXEDIR\update-$PINGUINO_RELEASE" r
@@ -746,9 +759,7 @@ FunctionEnd
 Function InstallPinguinoIde
 
     ;Download Pinguino IDE
-    StrCpy $url $SourceForge
-    StrCpy $program "${pinguino-ide}"
-    Call Download
+    ${Download} $SourceForge ${pinguino-ide}
 
     ;Install Pinguino IDE
     ClearErrors
@@ -766,9 +777,7 @@ FunctionEnd
 Function InstallPinguinoLibraries
 
     ;Download Pinguino libraries
-    StrCpy $url $SourceForge
-    StrCpy $program "${pinguino-libraries}"
-    Call Download
+    ${Download} $SourceForge ${pinguino-libraries}
 
     ;Install Pinguino Libraries
     ClearErrors
@@ -810,9 +819,7 @@ Function InstallLibUSB
     ;IfErrors 0 Done
 
     ;Download LibUSB
-    StrCpy $url "${URL_LIBUSB}/${LIBUSBWIN32_VERSION}"
-    StrCpy $program "libusb-win32-bin-${LIBUSBWIN32_VERSION}.zip"
-    Call Download
+    ${Download} "${URL_LIBUSB}/${LIBUSBWIN32_VERSION}" "libusb-win32-bin-${LIBUSBWIN32_VERSION}.zip"
     
     ;Unzip LibUSB
     ClearErrors
@@ -841,13 +848,11 @@ FunctionEnd
 Function InstallSDCC
 
     ;Download SDCC
-    StrCpy $url ${URL_SFOS}
     ${If} ${RunningX64}
-    StrCpy $program ${pinguino-sdcc64}
+    ${Download} ${URL_SFOS} ${pinguino-sdcc64}
     ${Else}
-    StrCpy $program ${pinguino-sdcc32}
+    ${Download} ${URL_SFOS} ${pinguino-sdcc32}
     ${endif}
-    Call Download
 
     ;Install SDCC
     ClearErrors
@@ -869,9 +874,7 @@ Function InstallXC8
     ;Download XC8 Installer
     ;StrCpy $url ${URL_SFOS}
     ;StrCpy $program ${pinguino-xc8}
-    StrCpy $url ${URL_MCHP}
-    StrCpy $program ${pinguino-xc8-latest}
-    Call Download
+    ${Download} ${URL_MCHP} ${pinguino-xc8-latest}
 
     ;Run XC8 Installer
     ;nsExec::Exec '"$EXEDIR\${pinguino-xc8}"'
@@ -897,13 +900,11 @@ FunctionEnd
 Function InstallGCC
 
     ;Download GCC for Pinguino
-    StrCpy $url ${URL_SFOS}
     ${If} ${RunningX64}
-    StrCpy $program ${pinguino-gcc64}
+    ${Download} ${URL_SFOS} ${pinguino-gcc64}
     ${Else}
-    StrCpy $program ${pinguino-gcc32}
+    ${Download} ${URL_SFOS} ${pinguino-gcc32}
     ${endif}
-    Call Download
 
     ;Install GCC for Pinguino
     ClearErrors

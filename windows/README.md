@@ -7,53 +7,69 @@ v1.7.1.2
 * Fixed Sourceforge timeout issue
 * Changed shortcut CONTROL|ALT|P (equivalent to ALTGR|P under Windows) to CTRL|SHIFT|P
 * Fixed XC8_VERSION and XC8_PATH in Pinguino Config. file when user don't want to install XC8
+* Added Python Request as a new dependency
+
 v1.7.1.1
 * Fixed P32-gcc path issue
 * Fixed Desktop Icon
 * Fixed update-testing copy 
 * Uninstall any prior Pinguino Pip module
+
 v1.7.1.0
 * Moved Compilers in Program Files
 * Moved User data in User's Documents folder
 * New architecture detection
 * Install the latest XC8 version
+
 v1.7.0.11
 * Fixed "WindowsError: [Error 6] The handle is invalid" for v12 on 32-bit
   by replacing pythonw.exe by python.exe in pinguino.bat
 * Fixed pinguino-reset.py to pinguino-reset.pyc
 * Updated XC8 v1.36 to XC8 V1.38
+
 v1.7.0.10
 * Simplified all dependencies installation
 * Fixed PyUSB install
+
 v1.7.0.9
 * Fixed pinguino_reset.py to pinguino-reset.py
+
 v1.7.0.8
 * Fixed path to pinguino_reset.py
+
 v1.7.0.7
 * Added Pip update
 * Added call to post-install routine for testing
+
 v1.7.0.6
 * Fixed pinguino.windows.conf "" issue
+
 v1.7.0.5
 * Fixed path issues
 * Automatic update of pinguino.windows.conf
+
 v1.7.0.4
 * Fixed Register Base reading for 64-bit OS
+
 v1.7.0.3
 * Added a marquee control when downloading
 * Updated the way PIP modules are installed
 * Removed installation in user's own path
+
 v1.7.0.2
 * Fixed English translation
 * Better logo management
 * Download the compilers before the drivers
 * XC8 installation only for the testing version 
+
 v1.7.0.1
 * Fixed the way curl.exe and pinguino11.bmp are wrapped up
+
 v1.7.0.0
 * Build with Nullsoft Scriptable Install System v3.0b3
 * Added stable/testing choice
 * Added xc8 compiler choice
+
 v1.6.0.0
 * Added start Pinguino IDE functionnality
 * Added automatic transparent driver installation
@@ -68,13 +84,16 @@ v1.6.0.0
 * Created Download macro
 * Updated detection routine
 * Python can now be installed anywhere not only on C:
+
 v1.5.0.0
 * Added Python support for X86 and X86-64
 * Added PySide support for X86 and X86-64
 * Python and PySide are no more embedded but downloaded during installation
+
 v1.4.0.0
 * Build with Nullsoft Scriptable Install System v3.0b1
 * Added latest Python 2.7.10 support
+
 v1.3.0.0
 * Updated drivers installation info.
 * Fixed Windows Vista and later Pinguino device driver pre-install.
@@ -84,12 +103,15 @@ v1.3.0.0
 * Download the proper Pinguino Compiler based on system architecture (32/64).
 * Allows user to select the compilers to be installed (PIC8 and/or PIC32).
 * The installer get the latest Pinguino packages from SourceForge.
+
 v1.2.0.0
 * Unzip routine speed-up improvement.
 * Italian language translation update, thanks to Pasquale Fersini.
 * Portugese Brazil language translation update, thanks to Wagner de Queiroz.
+
 v1.1.0.0
 * Build with Nullsoft Scriptable Install System v2.46
+
 v1.0.0.0
 * Test version
 
