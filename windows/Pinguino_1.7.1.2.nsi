@@ -310,10 +310,10 @@ Function .onInit
     ;and set Pinguino default path
     ${If} ${RunningX64}
         SetRegView 64
-        StrCpy $INSTDIR '$PROGRAMFILES64\${PINGUINO_NAME}'
+        StrCpy $INSTDIR "$PROGRAMFILES64\${PINGUINO_NAME}"
     ${Else}
         SetRegView 32
-        StrCpy $INSTDIR '$PROGRAMFILES32\${PINGUINO_NAME}'
+        StrCpy $INSTDIR "$PROGRAMFILES32\${PINGUINO_NAME}"
     ${endif}
 
     ;Embed files
@@ -374,7 +374,7 @@ Section "Install"
 
     ;Install Compilers ($R0, $R1 and $R2 are checkboxes results)
     
-    SDCC:
+    ;SDCC:
     StrCmp $R0 "0" XC8
     Call InstallSDCC
 
@@ -388,14 +388,20 @@ Section "Install"
     ;User don't want to install XC8
     ;Let's check if XC8 has been already installed
     ;We look in the registry database
+    ${If} ${RunningX64}
+        SetRegView 32
+    ${endif}
     ReadRegStr $XC8_VERSION HKLM "${REG_XC8}" "Version"
     ReadRegStr $XC8_PATH HKLM "${REG_XC8}" "Location"
+    ${If} ${RunningX64}
+        SetRegView 64
+    ${endif}
 
     ${If} $XC8_VERSION == ""
     DetailPrint "XC8 not found"
     ${Else}
-    DetailPrint "XC8 v$XC8_VERSION path is $XC8_PATH"
-    DetailPrint "XC8 v$XC8_VERSION $(msg_installed)"
+    DetailPrint "XC8 $XC8_VERSION path is $XC8_PATH"
+    DetailPrint "XC8 $XC8_VERSION $(msg_installed)"
     ${Endif}
 
     GCC:
@@ -618,7 +624,7 @@ Function Download
 
 FunctionEnd
 
-!define Download "!insertmacro StrTrim"
+!define Download "!insertmacro Download"
  
 !macro Download URL PROGRAM
     Push "${URL}"
@@ -640,9 +646,9 @@ Function InstallPython
     DetailPrint "Python v2.7 $(msg_not_detected)"
 
     ${If} ${RunningX64}
-    ${Download} "${URL_PYTHON}/${PYTHON_VERSION}" 'python-${PYTHON_VERSION}.amd64.msi'
+    ${Download} "${URL_PYTHON}/${PYTHON_VERSION}" "python-${PYTHON_VERSION}.amd64.msi"
     ${Else}
-    ${Download} "${URL_PYTHON}/${PYTHON_VERSION}" 'python-${PYTHON_VERSION}.msi'
+    ${Download} "${URL_PYTHON}/${PYTHON_VERSION}" "python-${PYTHON_VERSION}.msi"
     ${endif}
 
     ;Install Python
@@ -883,11 +889,15 @@ Function InstallXC8
     StrCmp $0 "0" +2
     DetailPrint "XC8 $(E_installing) : $0!"
 
-    ReadRegStr $0 HKLM "${REG_XC8}" "Version"
-    StrCpy $0 $XC8_VERSION
-    ReadRegStr $0 HKLM "${REG_XC8}" "Location"
-    StrCpy $0 $XC8_PATH
-
+    ${If} ${RunningX64}
+        SetRegView 32
+    ${endif}
+    ReadRegStr $XC8_VERSION HKLM "${REG_XC8}" "Version"
+    ReadRegStr $XC8_PATH HKLM "${REG_XC8}" "Location"
+    ${If} ${RunningX64}
+        SetRegView 64
+    ${endif}
+    
     DetailPrint "XC8 v$XC8_VERSION path is $XC8_PATH"
     DetailPrint "XC8 v$XC8_VERSION $(msg_installed)"
 
