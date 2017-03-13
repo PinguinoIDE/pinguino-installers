@@ -314,7 +314,7 @@ Function .onInit
     ${Else}
         SetRegView 32
         StrCpy $INSTDIR '$PROGRAMFILES32\${PINGUINO_NAME}'
-    ${endif}
+    ${Endif}
 
     ;Embed files
     SetOutPath $EXEDIR
@@ -388,14 +388,20 @@ Section "Install"
     ;User don't want to install XC8
     ;Let's check if XC8 has been already installed
     ;We look in the registry database
+    ${If} ${RunningX64}
+    SetRegView 32
+    ${Endif}
     ReadRegStr $XC8_VERSION HKLM "${REG_XC8}" "Version"
     ReadRegStr $XC8_PATH HKLM "${REG_XC8}" "Location"
+    ${If} ${RunningX64}
+    SetRegView 64
+    ${Endif}
 
     ${If} $XC8_VERSION == ""
     DetailPrint "XC8 not found"
     ${Else}
-    DetailPrint "XC8 v$XC8_VERSION path is $XC8_PATH"
-    DetailPrint "XC8 v$XC8_VERSION $(msg_installed)"
+    DetailPrint "XC8 $XC8_VERSION path is $XC8_PATH"
+    DetailPrint "XC8 $XC8_VERSION $(msg_installed)"
     ${Endif}
 
     GCC:
@@ -450,14 +456,11 @@ Function PAGE_RELEASE
     ${NSD_CreateRadioButton} 250 125 100% 10u "Testing (v${PINGUINO_TESTING})"
     Pop $RELEASE_TESTING
 
+    ;Testing is the default installation 
     ${If} $RELEASE_STATE == 1
-
-        ${NSD_SetState} $RELEASE_TESTING  ${BM_SETCHECK}
-
-    ${Else}
-
         ${NSD_SetState} $RELEASE_STABLE  ${BM_SETCHECK}
-
+    ${Else}
+        ${NSD_SetState} $RELEASE_TESTING  ${BM_SETCHECK}
     ${endif}
 
     ${NSD_CreateBitmap} 0 0 100% 50% ""
@@ -474,17 +477,13 @@ Function PAGE_RELEASE_LEAVE
     ${NSD_GetState} $RELEASE_TESTING $R1
 
     ${If} $R0 == 1
-
-        StrCpy $PINGUINO_VERSION ${PINGUINO_STABLE}
-        StrCpy $PINGUINO_RELEASE "stable"
-        StrCpy $RELEASE_STATE 1
-
+    StrCpy $PINGUINO_VERSION ${PINGUINO_STABLE}
+    StrCpy $PINGUINO_RELEASE "stable"
+    StrCpy $RELEASE_STATE 0
     ${Else}
-
-        StrCpy $PINGUINO_VERSION ${PINGUINO_TESTING}
-        StrCpy $PINGUINO_RELEASE "testing"
-        StrCpy $RELEASE_STATE 1
-
+    StrCpy $PINGUINO_VERSION ${PINGUINO_TESTING}
+    StrCpy $PINGUINO_RELEASE "testing"
+    StrCpy $RELEASE_STATE 1
     ${endif}
 
     ;StrCpy $INSTDIR "$INSTDIR\v$PINGUINO_VERSION"
@@ -883,10 +882,14 @@ Function InstallXC8
     StrCmp $0 "0" +2
     DetailPrint "XC8 $(E_installing) : $0!"
 
-    ReadRegStr $0 HKLM "${REG_XC8}" "Version"
-    StrCpy $0 $XC8_VERSION
-    ReadRegStr $0 HKLM "${REG_XC8}" "Location"
-    StrCpy $0 $XC8_PATH
+    ${If} ${RunningX64}
+        SetRegView 32
+    ${Endif}
+    ReadRegStr $XC8_VERSION HKLM "${REG_XC8}" "Version"
+    ReadRegStr $XC8_PATH HKLM "${REG_XC8}" "Location"
+    ${If} ${RunningX64}
+        SetRegView 64
+    ${Endif}
 
     DetailPrint "XC8 v$XC8_VERSION path is $XC8_PATH"
     DetailPrint "XC8 v$XC8_VERSION $(msg_installed)"

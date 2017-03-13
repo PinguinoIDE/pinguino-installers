@@ -6,6 +6,7 @@
 # ----------------------------------------------------------------------
 # CHANGELOG
 # ----------------------------------------------------------------------
+# 13-03-2017 : fixed XC8 version in pinguino.conf
 # 31-12-2016 : added pinguino.conf updating
 # 05-10-2016 : changed installations order : compilers first
 # 11-08-2016 : added pinguino.linux.conf updating
@@ -25,7 +26,7 @@
 # update or install all necessary python modules ? 
 # ----------------------------------------------------------------------
 
-VERSION=31-12-2016
+VERSION=13-03-2017
 
 DOWNLOAD=1
 INSTALL=1
@@ -66,12 +67,14 @@ NORMAL=${GREEN}
 END=${TERM}
 
 # Log a message out to the console
-function log {
+function log
+{
     echo -e $1"$*"$TERM
 }
 
 # Carriage return
-function println {
+function println
+{
     echo -e "\r\n"
 }
 
@@ -109,7 +112,8 @@ function progress_bar()
 }
 
 # Download a package if newer
-function fetch {
+function fetch
+{
     log $NORMAL "* $1 package"
     if [ "$1" == "${XC8INST}" ]; then
         wget ${XC8DIR}/$1 --quiet --timestamping --progress=bar:force
@@ -119,7 +123,8 @@ function fetch {
 }
 
 # Install a package if newer
-function install {
+function install
+{
     log $NORMAL "* $1 package"
     filename=$1
     extension="${filename##*.}"
@@ -209,22 +214,29 @@ fi
 if [ ${RELEASE} ]; then
 
     log $NORMAL "Which release of Pinguino do you want to update/install ?"
-    log $WARNING "1) Stable  (default)"
-    log $WARNING "2) Testing"
+    log $ERROR "The testing version is now recommended."
+    log $WARNING "1) Stable"
+    log $WARNING "2) Testing (default)"
 
     echo -e -n "\e[31;1m >\e[05m"
     read what
     echo -e -n "\e[00m"
 
     case $what in
-        2) REL=testing ;;
-        *) REL=stable  ;;
+        1) REL=stable ;;
+        *) REL=testing  ;;
     esac
 
 else
 
     REL=stable
 
+fi
+
+if [ ${REL} = "testing" ]; then
+    RELEASE=${TESTING}
+else
+    RELEASE=${STABLE}
 fi
 
 mkdir -p ${REL}
@@ -328,7 +340,7 @@ fi
 
 if [ ${DOWNLOAD} ]; then
 
-    log $WARNING "Downloading packages ..."
+    log $WARNING "Downloading packages (please be patient) ..."
 
     #i=0
 
@@ -386,44 +398,83 @@ if [ ${INSTALL} ]; then
 
 fi
 
-# POSTINSTALL
+# COMPILERS LIST
 ########################################################################
 
-if [ "${REL}" == "stable" ]; then
-    python /opt/pinguino/v${STABLE}/post_install.py > /dev/null 2>&1
+log $WARNING "Checking compilers ..."
+
+#XC8
+CURXC8VER="v0.00"
+for XC8VER in $(ls /opt/microchip/xc8); do
+    if [ "${XC8VER}" > "${CURXC8VER}" ]; then
+        CURXC8VER=${XC8VER} 
+    fi
+done
+if [ "${CURXC8VER}" != "v0.00" ]; then
+    log $NORMAL XC8 ${CURXC8VER} has been found on this computer.
 else
-    python /opt/pinguino/v${TESTING}/pinguino/pinguino_reset.py
-    #python /opt/pinguino/v${TESTING}/cmd/pinguino-reset.py
+    log $ERROR No XC8 compiler found on this computer.
+fi
+
+#SDCC
+if [ -e "/opt/pinguino/p8/bin/sdcc" ]; then
+    log $NORMAL SDCC has been found on this computer :
+    log $NORMAL $(/opt/pinguino/p8/bin/sdcc --version)
+else
+    log $ERROR No SDCC compiler found on this computer.
+fi
+
+#P32-GCC
+if [ -e "/opt/pinguino/p32/bin/p32-gcc" ]; then
+    log $NORMAL P32-GCC has been found on this computer :
+    log $NORMAL $(/opt/pinguino/p32/bin/p32-gcc --version)
+else
+    log $ERROR No P32-GCC compiler found on this computer.
 fi
 
 # UPDATE LINUX CONFIG FILES
 ########################################################################
 
-if [ ${NEWXC8VER} ]; then
+HOME=$(echo ~)
+PCONF=/opt/pinguino/v${TESTING}/pinguino/qtgui/config/pinguino.linux.conf
+#PCONF=${HOME}/Pinguino/v${RELEASE}/pinguino.conf
+rm -f ${PCONF} > /dev/null 2>&1
+touch ${PCONF}
+echo -e "[Paths]" >> ${PCONF}
+echo -e "sdcc_bin = /opt/pinguino/p8/bin" >> ${PCONF}
+echo -e "gcc_bin  = /opt/pinguino/p32/bin" >> ${PCONF}
+if [ "${REL}" == "testing" ]; then
+echo -e "xc8_bin  = /opt/microchip/xc8/${CURXC8VER}/bin" >> ${PCONF}
+fi
+echo -e "pinguino_8_libs  = /opt/pinguino/v${RELEASE}/p8" >> ${PCONF}
+echo -e "pinguino_32_libs = /opt/pinguino/v${RELEASE}/p32" >> ${PCONF}
+echo -e "user_libs = /opt/pinguino/v${RELEASE}/pinguinolibs" >> ${PCONF}
+echo -e "install_path = /opt/pinguino/v${RELEASE}" >> ${PCONF}
+#echo -e "install_path = ${HOME}/Pinguino/v${RELEASE}" >> ${PCONF}
+echo -e "user_path = ${HOME}/Pinguino/v${RELEASE}" >> ${PCONF}
 
-    PCONF=/opt/pinguino/v${TESTING}/pinguino/qtgui/config/pinguino.linux.conf
-    CURXC8VER=v1.$(cat $PCONF | grep -Po '(?<=v1.)\d\d')
-    if [ "${NEWXC8VER}" != "${CURXC8VER}" ]; then
-        log $WARNING Updating XC8 ${CURXC8VER} to ${NEWXC8VER}
-        sed -i -e "s/${CURXC8VER}/${NEWXC8VER}/g" ${PCONF}
-        #cat ${PCONF}
-    fi
+# POSTINSTALL
+########################################################################
 
-    PCONF=~/Pinguino/v${TESTING}/pinguino.conf
-    CURXC8VER=v1.$(cat $PCONF | grep -Po '(?<=v1.)\d\d')
-    if [ "${NEWXC8VER}" != "${CURXC8VER}" ]; then
-        log $WARNING Updating XC8 ${CURXC8VER} to ${NEWXC8VER}
-        sed -i -e "s/${CURXC8VER}/${NEWXC8VER}/g" ${PCONF}
-        #cat ${PCONF}
-    fi
+log $WARNING "Copying files to your Pinguino folder ..."
+
+if [ "${REL}" == "stable" ]; then
+    python /opt/pinguino/v${STABLE}/post_install.py > /dev/null 2>&1
+else
+    cd /opt/pinguino/v${TESTING}
+    mkdir -p ${HOME}/Pinguino/v${TESTING}
+    cp -R examples graphical_examples source ${HOME}/Pinguino/v${TESTING}/
+    #python /opt/pinguino/v${TESTING}/pinguino/pinguino_reset.py
+    # > /dev/null 2>&1
+    #python /opt/pinguino/v${TESTING}/cmd/pinguino-reset.py
 fi
 
 # LAUNCH
 ########################################################################
 
-log $NORMAL "Do you want to launch the IDE ?"
-log $WARNING "1) Yes (default)"
-log $WARNING "2) No"
+log $WARNING "Do you want to launch the IDE ?"
+log $NORMAL "1) Yes (default)"
+log $NORMAL "2) No"
 
 echo -e -n "\e[31;1m >\e[05m"
 read what
