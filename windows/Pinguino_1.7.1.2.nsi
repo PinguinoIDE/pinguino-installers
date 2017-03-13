@@ -310,11 +310,16 @@ Function .onInit
     ;and set Pinguino default path
     ${If} ${RunningX64}
         SetRegView 64
-        StrCpy $INSTDIR '$PROGRAMFILES64\${PINGUINO_NAME}'
+        StrCpy $INSTDIR "$PROGRAMFILES64\${PINGUINO_NAME}"
     ${Else}
         SetRegView 32
+<<<<<<< HEAD
         StrCpy $INSTDIR '$PROGRAMFILES32\${PINGUINO_NAME}'
     ${Endif}
+=======
+        StrCpy $INSTDIR "$PROGRAMFILES32\${PINGUINO_NAME}"
+    ${endif}
+>>>>>>> 79d4e8d7be97133e32b076f90f8dbfdeb84fbcef
 
     ;Embed files
     SetOutPath $EXEDIR
@@ -374,7 +379,7 @@ Section "Install"
 
     ;Install Compilers ($R0, $R1 and $R2 are checkboxes results)
     
-    SDCC:
+    ;SDCC:
     StrCmp $R0 "0" XC8
     Call InstallSDCC
 
@@ -389,6 +394,7 @@ Section "Install"
     ;Let's check if XC8 has been already installed
     ;We look in the registry database
     ${If} ${RunningX64}
+<<<<<<< HEAD
     SetRegView 32
     ${Endif}
     ReadRegStr $XC8_VERSION HKLM "${REG_XC8}" "Version"
@@ -396,6 +402,15 @@ Section "Install"
     ${If} ${RunningX64}
     SetRegView 64
     ${Endif}
+=======
+        SetRegView 32
+    ${endif}
+    ReadRegStr $XC8_VERSION HKLM "${REG_XC8}" "Version"
+    ReadRegStr $XC8_PATH HKLM "${REG_XC8}" "Location"
+    ${If} ${RunningX64}
+        SetRegView 64
+    ${endif}
+>>>>>>> 79d4e8d7be97133e32b076f90f8dbfdeb84fbcef
 
     ${If} $XC8_VERSION == ""
     DetailPrint "XC8 not found"
@@ -617,7 +632,7 @@ Function Download
 
 FunctionEnd
 
-!define Download "!insertmacro StrTrim"
+!define Download "!insertmacro Download"
  
 !macro Download URL PROGRAM
     Push "${URL}"
@@ -639,9 +654,9 @@ Function InstallPython
     DetailPrint "Python v2.7 $(msg_not_detected)"
 
     ${If} ${RunningX64}
-    ${Download} "${URL_PYTHON}/${PYTHON_VERSION}" 'python-${PYTHON_VERSION}.amd64.msi'
+    ${Download} "${URL_PYTHON}/${PYTHON_VERSION}" "python-${PYTHON_VERSION}.amd64.msi"
     ${Else}
-    ${Download} "${URL_PYTHON}/${PYTHON_VERSION}" 'python-${PYTHON_VERSION}.msi'
+    ${Download} "${URL_PYTHON}/${PYTHON_VERSION}" "python-${PYTHON_VERSION}.msi"
     ${endif}
 
     ;Install Python
@@ -884,13 +899,22 @@ Function InstallXC8
 
     ${If} ${RunningX64}
         SetRegView 32
+<<<<<<< HEAD
     ${Endif}
+=======
+    ${endif}
+>>>>>>> 79d4e8d7be97133e32b076f90f8dbfdeb84fbcef
     ReadRegStr $XC8_VERSION HKLM "${REG_XC8}" "Version"
     ReadRegStr $XC8_PATH HKLM "${REG_XC8}" "Location"
     ${If} ${RunningX64}
         SetRegView 64
+<<<<<<< HEAD
     ${Endif}
 
+=======
+    ${endif}
+    
+>>>>>>> 79d4e8d7be97133e32b076f90f8dbfdeb84fbcef
     DetailPrint "XC8 v$XC8_VERSION path is $XC8_PATH"
     DetailPrint "XC8 v$XC8_VERSION $(msg_installed)"
 
