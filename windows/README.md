@@ -3,12 +3,14 @@ Pinguino-IDE Windows Installer
 
 ### Changelog
 
+v1.7.1.3
+* Added Python Request as a new dependency
+* Fixed v11 path
+
 v1.7.1.2
 * Fixed Sourceforge timeout issue
 * Changed shortcut CONTROL|ALT|P (equivalent to ALTGR|P under Windows) to CTRL|SHIFT|P
 * Fixed XC8_VERSION and XC8_PATH in Pinguino Config. file when user don't want to install XC8
-* Testing version is now the default installation
-* Added Python Request as a new dependency
 
 v1.7.1.1
 * Fixed P32-gcc path issue
