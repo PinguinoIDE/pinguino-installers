@@ -6,6 +6,7 @@
 # ----------------------------------------------------------------------
 # CHANGELOG
 # ----------------------------------------------------------------------
+# 20-03-2017 : added python module upgrade with pip
 # 13-03-2017 : fixed XC8 version in pinguino.conf
 # 31-12-2016 : added pinguino.conf updating
 # 05-10-2016 : changed installations order : compilers first
@@ -26,9 +27,10 @@
 # update or install all necessary python modules ? 
 # ----------------------------------------------------------------------
 
-VERSION=13-03-2017
+VERSION=20-03-2017
 
 DOWNLOAD=1
+UPGRADE=1
 INSTALL=1
 INTERFACE=
 RELEASE=1
@@ -189,6 +191,26 @@ fi
 if [ ! -e "/usr/bin/git" ]; then
     log $WARNING "Git not found, installing it ..."
     sudo apt-get install git
+fi
+
+# DO WE HAVE PIP ?
+########################################################################
+
+if [ ! -e "/usr/bin/pip" ]; then
+    log $WARNING "Pip not found, installing it ..."
+    sudo apt-get install python-pip
+fi
+
+# DO WE HAVE QT ?
+########################################################################
+
+if [ ${UPGRADE} ]; then
+
+    if [ ! -e "/usr/bin/qmake-qt4" ]; then
+        log $WARNING "Qmake not found, installing it ..."
+        sudo apt-get install qt4-default qt4-qmake
+    fi
+
 fi
 
 # ARCHITECTURE
@@ -430,6 +452,17 @@ if [ -e "/opt/pinguino/p32/bin/p32-gcc" ]; then
     log $NORMAL $(/opt/pinguino/p32/bin/p32-gcc --version)
 else
     log $ERROR No P32-GCC compiler found on this computer.
+fi
+
+# UPGRADE PYTHON MODULES
+########################################################################
+
+if [ ${UPGRADE} ]; then
+
+    log $WARNING "Upgrading Python modules ..."
+    log $ERROR "Please be patient, it can be very long the first time."
+    sudo python -m pip install --upgrade pip pyside pyusb wheel beautifulsoup4 setuptools requests
+
 fi
 
 # UPDATE LINUX CONFIG FILES
