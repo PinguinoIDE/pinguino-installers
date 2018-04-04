@@ -991,6 +991,7 @@ FunctionEnd
 Function InstallComplete
 
     ;Update pinguino.windows.conf for all windows version
+    ;Note that $UserPath could be replaced with %USERNAME% (Dave Maners, 2017-08-13)
     DetailPrint "Updating pinguino.windows.conf ..."
     FileOpen  $0 $INSTDIR\v$PINGUINO_VERSION\pinguino\qtgui\config\pinguino.windows.conf w
     FileWrite $0 "[Paths]$\r$\n"

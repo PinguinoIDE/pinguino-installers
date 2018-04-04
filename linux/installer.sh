@@ -1,33 +1,37 @@
 #!/bin/bash
 
 # ----------------------------------------------------------------------
-# description:      Pinguino IDE Install Script
-# author:           regis blanchot <rblanchot@gmail.com>
-# ----------------------------------------------------------------------
-# CHANGELOG
-# ----------------------------------------------------------------------
-# 20-03-2017 : added python module upgrade with pip
-# 13-03-2017 : fixed XC8 version in pinguino.conf
-# 31-12-2016 : added pinguino.conf updating
-# 05-10-2016 : changed installations order : compilers first
-# 11-08-2016 : added pinguino.linux.conf updating
-# 11-08-2016 : added latest XC8 version downloading
-# 11-08-2016 : fixed XC8 installation by removing "/dev/null" direction 
-# 11-08-2016 : added post-install procedure for the testing version
-# 03-04-2016 : changed dpkg for gdebi
-# 09-05-2016 : added "--mode text" option to XC8 installer
-# 11-05-2016 : added update option to run git
-# 31-03-2016 : removed wget "--show-progress" option (not supported on all Linux distro)
-# 25-04-2014 : first release    
+# Description:      Pinguino IDE Install Script for Linux
+# Author:           regis blanchot <rblanchot@gmail.com>
 # ----------------------------------------------------------------------
 # TODO
 # ----------------------------------------------------------------------
+# xx-xx-201x : v1.4.0 added python 3 support
 # replace package installation with git clone ?
 # replace package update with git pull ?
-# update or install all necessary python modules ? 
+# replace sdcc package with the official sdcc archive ?
+# ----------------------------------------------------------------------
+# CHANGELOG
+# ----------------------------------------------------------------------
+# 12-03-2018 : v1.3.3 updated pyusb 0.x to 1.x (to support core functions)
+# 28-09-2017 : v1.3.2 added cmake installation
+# 11-04-2017 : v1.3.1 fixed installation path
+# 20-03-2017 : v1.3.0 added python module upgrade with pip
+# 13-03-2017 : v1.2.3 fixed XC8 version in pinguino.conf
+# 31-12-2016 : v1.2.2 added pinguino.conf updating
+# 05-10-2016 : v1.2.1 changed installations order : compilers first
+# 11-08-2016 : v1.2.0 added pinguino.linux.conf updating
+# 11-08-2016 : v1.1.3 added latest XC8 version downloading
+# 11-08-2016 : v1.1.2 fixed XC8 installation by removing "/dev/null" direction 
+# 11-08-2016 : v1.1.1 added post-install procedure for the testing version
+# 03-04-2016 : v1.1.0 changed dpkg for gdebi
+# 09-05-2016 : v1.0.3 added "--mode text" option to XC8 installer
+# 11-05-2016 : v1.0.2 added update option to run git
+# 31-03-2016 : v1.0.1 removed wget "--show-progress" option (not supported on all Linux distro)
+# 25-04-2014 : v1.0.0 first release    
 # ----------------------------------------------------------------------
 
-VERSION=20-03-2017
+VERSION="1.3.3"
 
 DOWNLOAD=1
 UPGRADE=1
@@ -39,15 +43,18 @@ STABLE=11
 TESTING=12
 DPKG=gdebi
 
-#XC8INST=xc8-v1.36-full-install-linux-installer.run
+#XC8INST=xc8-v1.44-full-install-linux-installer.run
 XC8INST=mplabxc8linux
 
 # XC8 compiler location
-XC8DIR=https://www.microchip.com
-# Pinguino location
-PDIR=/opt/pinguino
+XC8DIR=http://www.microchip.com
+#XC8DIR=http://ww1.microchip.com
 # Pinguino Sourceforge location
 DLDIR=https://sourceforge.net/projects/pinguinoide/files/linux
+#DLDIR=downloads.sourceforge.net/projects/pinguinoide/files/linux
+# Pinguino 
+location
+PDIR=/opt/pinguino
 
 # Compilers code
 NONE=0
@@ -74,45 +81,6 @@ function log
     echo -e $1"$*"$TERM
 }
 
-# Carriage return
-function println
-{
-    echo -e "\r\n"
-}
-
-# Progress-bar, author: Dotan Barak
-BAR_WIDTH=50
-BAR_CHAR_START="["
-BAR_CHAR_END="]"
-BAR_CHAR_EMPTY="."
-BAR_CHAR_FULL="="
-BRACKET_CHARS=2
-MAX_PERCENT=100
-LIMIT=100
-
-function progress_bar()
-{
-    # Calculate how many characters will be full.
-    let "full_limit = ((($1 - $BRACKET_CHARS) * $2) / $LIMIT)"
-
-    # Calculate how many characters will be empty.
-    let "empty_limit = ($1 - $BRACKET_CHARS) - ${full_limit}"
-
-    # Prepare the bar.
-    bar_line="${BAR_CHAR_START}"
-    for ((j=0; j<full_limit; j++)); do
-        bar_line="${bar_line}${BAR_CHAR_FULL}"
-    done
-
-    for ((j=0; j<empty_limit; j++)); do
-        bar_line="${bar_line}${BAR_CHAR_EMPTY}"
-    done
-
-    bar_line="${bar_line}${BAR_CHAR_END}"
-
-    printf " %3d%% %s" $2 ${bar_line}
-}
-
 # Download a package if newer
 function fetch
 {
@@ -136,15 +104,12 @@ function install
         #sudo apt-get install -f > /dev/null
     else
         sudo chmod +x ${XC8INST}
-        NEWXC8VER=v1.$(sudo ./${XC8INST} --version  | grep -Po '(?<=v1.)\d\d')
+        NEWXC8VER=v1.$(sudo ./${XC8INST} --version | grep -Po '(?<=v1.)\d\d')
         #log $ERROR ${XC8VER}
         if [ ! -d "/opt/microchip/xc8/$NEWXC8VER" ]; then
             sudo ./${XC8INST} --mode text
         fi
     fi
-    #let "i=$i + $STEP"
-    #progress_bar ${BAR_WIDTH} ${i}
-    #echo -en "\r"
 }
 
 # TITLE
@@ -152,9 +117,8 @@ function install
 
 log $CLS
 log $NORMAL ------------------------------------------------------------
-log $NORMAL Pinguino IDE Installation Script
+log $NORMAL Pinguino IDE Installation Script v${VERSION}
 log $NORMAL Regis Blanchot - rblanchot@pinguino.cc
-log $NORMAL Last update ${VERSION}
 log $NORMAL ------------------------------------------------------------
 
 # DO WE RUN AS ADMIN ?
@@ -165,7 +129,7 @@ if [ "$user" == "root" -a "$UID" == "0" ]; then
     log $ERROR "Don't run the installer as Root or Super User."
     log $ERROR "Admin's password will be asked later."
     log $ERROR "Usage : ./installer.sh"
-    println
+    echo -e "\r\n"
     exit 1
 fi
 
@@ -198,17 +162,17 @@ fi
 
 if [ ! -e "/usr/bin/pip" ]; then
     log $WARNING "Pip not found, installing it ..."
-    sudo apt-get install python-pip
+    sudo apt-get install python-pip python-pyside
 fi
 
-# DO WE HAVE QT ?
+# DO WE HAVE QTMAKE and CMAKE ?
 ########################################################################
 
 if [ ${UPGRADE} ]; then
 
     if [ ! -e "/usr/bin/qmake-qt4" ]; then
         log $WARNING "Qmake not found, installing it ..."
-        sudo apt-get install qt4-default qt4-qmake
+        sudo apt-get install qt4-default qt4-qmake cmake
     fi
 
 fi
@@ -216,13 +180,15 @@ fi
 # ARCHITECTURE
 ########################################################################
 
-if [ `uname -m` == "armv6l" ]; then
+UNAME=`uname -m`
+
+if [ ${UNAME} == "armv6l" ]; then
     ARCH=RPi
     log $NORMAL "Host is a Raspberry Pi."
-elif [ `uname -m` == "armv7l" ]; then
+elif [ ${UNAME} == "armv7l" ]; then
     ARCH=RPi
     log $NORMAL "Host is a Raspberry Pi 2."
-elif [ `uname -m` == "x86_64" ]; then
+elif [ ${UNAME} == "x86_64" ]; then
     ARCH=64
     log $NORMAL "Host is a ${ARCH}-bit GNU/Linux."
 else
@@ -255,7 +221,7 @@ else
 
 fi
 
-if [ ${REL} = "testing" ]; then
+if [ ${REL} == "testing" ]; then
     RELEASE=${TESTING}
 else
     RELEASE=${STABLE}
@@ -307,31 +273,21 @@ if [ ${DOWNLOAD} ]; then
     if [ "${REL}" == "stable" ]; then
 
         case $what in
-            2)  COMP=$SDCC
-                STEP=33 ;;
-            3)  COMP=$GCC
-                STEP=33 ;;
-            4)  COMP=$((SDCC|GCC))
-                STEP=25 ;;
-            *)  COMP=$NONE
-                STEP=50 ;;
+            2)  COMP=$SDCC ;;
+            3)  COMP=$GCC ;;
+            4)  COMP=$((SDCC|GCC)) ;;
+            *)  COMP=$NONE ;;
         esac
 
     else
 
         case $what in
-            2)  COMP=$SDCC
-                STEP=33 ;;
-            3)  COMP=$XC8
-                STEP=33 ;;
-            4)  COMP=$GCC
-                STEP=33 ;;
-            5)  COMP=$((SDCC|XC8))
-                STEP=25 ;;
-            6)  COMP=$((SDCC|XC8|GCC))
-                STEP=20 ;;
-            *)  COMP=$NONE
-                STEP=50 ;;
+            2)  COMP=$SDCC ;;
+            3)  COMP=$XC8 ;;
+            4)  COMP=$GCC ;;
+            5)  COMP=$((SDCC|XC8)) ;;
+            6)  COMP=$((SDCC|XC8|GCC)) ;;
+            *)  COMP=$NONE ;;
         esac
 
     fi
@@ -344,7 +300,7 @@ if [ ${INTERFACE} ]; then
 
     log $NORMAL "Which graphic interface do you want to install ?"
     log $WARNING "1) Tkinter-based IDE (simple and light)"
-    log $WARNING "2) Qt4-based IDE (default)"
+    log $WARNING "2) Qt4-based IDE (default, recommended)"
     read what
 
     case $what in
@@ -460,8 +416,23 @@ fi
 if [ ${UPGRADE} ]; then
 
     log $WARNING "Upgrading Python modules ..."
-    log $ERROR "Please be patient, it can be very long the first time."
-    sudo python -m pip install --upgrade pip pyside pyusb wheel beautifulsoup4 setuptools requests
+    log $ERROR "Please be patient, it can be quite long the first time."
+
+    #sudo python -m pip install --upgrade pip pyside pyusb wheel beautifulsoup4 setuptools requests
+
+    # Get the latest version of pip
+    sudo python -m pip install --upgrade pip
+
+    # Updating pyside doesn't work
+    #sudo python -m pip install --upgrade pyside
+
+    # Update pyusb 0.x to 1.x (to support core functions)
+    sudo python -m pip install --pre pyusb
+
+    sudo python -m pip install --upgrade wheel
+    sudo python -m pip install --upgrade beautifulsoup4
+    sudo python -m pip install --upgrade setuptools
+    sudo python -m pip install --upgrade requests
 
 fi
 
