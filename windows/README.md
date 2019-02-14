@@ -3,6 +3,11 @@ Pinguino-IDE Windows Installer
 
 ### Changelog
 
+v1.8.0.0
+* Pinguino v13 support
+* Pyside2 (Qt5) instead of PySide (Qt4) support
+* New installation process based on git
+
 v1.7.2.0
 * Switched installation to Python 3
 
