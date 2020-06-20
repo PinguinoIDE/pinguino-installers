@@ -1,4 +1,4 @@
-;-----------------------------------------------------------------------
+;=======================================================================
 ; Pinguino IDE NSIS Installation Script
 ; Public Domain License 2014-2016
 ; 1.1 to 1.3 : Victor Villarreal <mefhigoseth@gmail.com>
@@ -12,7 +12,7 @@
 ; To compile this script you'll need version 3 or above of NSIS :
 ; http://nsis.sf_url.net/Download
 ; > makensis(.exe) Pinguino_x.x.x.x.nsi
-;-----------------------------------------------------------------------
+;=======================================================================
 
 XPStyle on
 ; This installer is running at admin level,
@@ -27,9 +27,9 @@ SetCompress force
 SetCompressor /SOLID lzma
 ShowInstDetails show                    ;Show installation logs
 
-;-----------------------------------------------------------------------
+;=======================================================================
 ;Includes
-;-----------------------------------------------------------------------
+;=======================================================================
 
 ;!include "Sections.nsh"
 !include "WinMessages.nsh"
@@ -40,9 +40,9 @@ ShowInstDetails show                    ;Show installation logs
 !include "LogicLib.nsh"
 !include "x64.nsh"
 
-;-----------------------------------------------------------------------
+;=======================================================================
 ;Defines
-;-----------------------------------------------------------------------
+;=======================================================================
 
 !define PINGUINO_NAME                   'Pinguino'
 !define PINGUINO_VERSION                '13'
@@ -53,7 +53,7 @@ ShowInstDetails show                    ;Show installation logs
 
 !define PYTHON_MAJOR_VERSION            '3'				; Python 2 will be deprecated soon
 !define PYTHON_MINOR_VERSION            '7'				; so we switched to version 3
-!define PYTHON_PATCH_VERSION            '2'
+!define PYTHON_PATCH_VERSION            '7'
 !define PYTHON_SHORT_VERSION            '${PYTHON_MAJOR_VERSION}.${PYTHON_MINOR_VERSION}'
 !define PYTHON_VERSION                  '${PYTHON_MAJOR_VERSION}.${PYTHON_MINOR_VERSION}.${PYTHON_PATCH_VERSION}'
 
@@ -94,14 +94,16 @@ ShowInstDetails show                    ;Show installation logs
 !define REG_USERDOC                     "SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\User Shell Folders"
 
 !define URL_SOURCEFORGE                 "https://sourceforge.net/projects"
+!define URL_GITHUB                      "https://github.com/PinguinoIDE"
 !define URL_PINGUINO                    "${URL_SOURCEFORGE}/pinguinoide/files"
 !define URL_SFOS                        "${URL_PINGUINO}/windows"
 !define URL_MCHP                        "http://www.microchip.com"
 !define URL_LIBUSB                      "${URL_SOURCEFORGE}/libusb-win32/files/libusb-win32-releases"
 !define URL_PYTHON                      "https://www.python.org/ftp/python"
 !define URL_GIT                         "https://github.com/git-for-windows/git/releases/download"
+!define URL_VISUALCPP                   "https://aka.ms/vs/16/release/"
 
-!define pinguino-ide                    "pinguino-ide.zip"
+!define pinguino-ide                    "pinguino-ide-master.zip"
 !define pinguino-libraries              "pinguino-libraries.zip"
 !define pinguino-xc8                    "xc8-v$xc8_version-full-install-windows-installer.exe"
 !define pinguino-xc8-latest             "mplabxc8windows"
@@ -110,9 +112,9 @@ ShowInstDetails show                    ;Show installation logs
 !define pinguino-gcc32                  "pinguino-windows32-gcc-mips-elf.zip"
 !define pinguino-gcc64                  "pinguino-windows64-gcc-mips-elf.zip"
 
-;-----------------------------------------------------------------------
+;=======================================================================
 ;General Settings
-;-----------------------------------------------------------------------
+;=======================================================================
 
 Name                                    '${PINGUINO_NAME}'
 ;Sets the default value of $INSTDIR, in case no other values can be found.
@@ -123,35 +125,31 @@ BrandingText                            '${FILE_URL}'
 VIAddVersionKey "ProductName"           '${INSTALLER_NAME}'
 VIAddVersionKey "ProductVersion"        '${INSTALLER_VERSION}'
 VIAddVersionKey "CompanyName"           '${FILE_OWNER}'
-VIAddVersionKey "LegalCopyright"        '2014-2019 ${FILE_OWNER}'
+VIAddVersionKey "LegalCopyright"        '2014-2020 ${FILE_OWNER}'
 VIAddVersionKey "FileDescription"       'Pinguino IDE & Compilers Installer'
 VIAddVersionKey "FileVersion"           '${INSTALLER_VERSION}'
 VIProductVersion ${INSTALLER_VERSION}
 
-;-----------------------------------------------------------------------
+;=======================================================================
 ;Pages
-;-----------------------------------------------------------------------
+;=======================================================================
 
 ;Installer
 !insertmacro MUI_PAGE_WELCOME           ; Displays a welcome message
 !insertmacro MUI_PAGE_LICENSE           "LICENSE"
 !insertmacro MUI_PAGE_LICENSE           "DISCLAIMER"
-;!insertmacro MUI_PAGE_DIRECTORY         ; Install path
 Page Custom  PAGE_COMPILER PAGE_COMPILER_LEAVE  ; Which Compilers ?
 !insertmacro MUI_PAGE_INSTFILES         ; Install Pinguino
 !insertmacro MUI_PAGE_FINISH            ; End of the installation 
 
-;Uninstaller : *** TODO UNPAGE RELEASE & COMPILERS ***
 !insertmacro MUI_UNPAGE_WELCOME
 !insertmacro MUI_UNPAGE_CONFIRM
-;UninstPage Custom  un.PAGE_RELEASE un.PAGE_RELEASE_LEAVE
 !insertmacro MUI_UNPAGE_INSTFILES
-;UninstPage Custom  un.PAGE_COMPILER un.PAGE_COMPILER_LEAVE
 !insertmacro MUI_UNPAGE_FINISH
 
-;-----------------------------------------------------------------------
+;=======================================================================
 ;Languages
-;-----------------------------------------------------------------------
+;=======================================================================
 
 !insertmacro MUI_LANGUAGE "English"     ; ???
 !insertmacro MUI_LANGUAGE "Spanish"     ; Victor Villarreal <mefhigoseth@gmail.com>
@@ -159,9 +157,9 @@ Page Custom  PAGE_COMPILER PAGE_COMPILER_LEAVE  ; Which Compilers ?
 !insertmacro MUI_LANGUAGE "Italian"     ; Pasquale Fersini <basquale.fersini@gmail.com>
 !insertmacro MUI_LANGUAGE "French"      ; Regis Blanchot <rblanchot@pinguino.cc>
 
-;-----------------------------------------------------------------------
+;=======================================================================
 ;Messages
-;-----------------------------------------------------------------------
+;=======================================================================
 
 LangString msg_not_detected ${LANG_ENGLISH} "not found. Installing it ..."
 LangString msg_not_detected ${LANG_SPANISH} "no detectado en el sistema. Instalando ..."
@@ -223,9 +221,9 @@ LangString msg_uptodate ${LANG_PORTUGUESEBR} "Your copy is up to date."
 LangString msg_uptodate ${LANG_ITALIAN} "Your copy is up to date."
 LangString msg_uptodate ${LANG_FRENCH} "Votre installation est à jour."
 
-;-----------------------------------------------------------------------
+;=======================================================================
 ;Questions
-;-----------------------------------------------------------------------
+;=======================================================================
 
 LangString Q_install_release ${LANG_ENGLISH} "Which release of Pinguino do you want to install?"
 LangString Q_install_release ${LANG_SPANISH} "Deseas instalar el testing o stable Pinguino IDE?"
@@ -251,9 +249,9 @@ LangString Q_install_compilers ${LANG_PORTUGUESEBR} "Do you want to install comp
 LangString Q_install_compilers ${LANG_ITALIAN} "Do you want to install compilers?"
 LangString Q_install_compilers ${LANG_FRENCH} "Voulez-vous installer des compilateurs ?"
 
-;-----------------------------------------------------------------------
+;=======================================================================
 ;Errors
-;-----------------------------------------------------------------------
+;=======================================================================
 
 LangString E_downloading ${LANG_ENGLISH} "download failed. Error was:"
 LangString E_downloading ${LANG_SPANISH} "no se pudo descargar. El error fue:"
@@ -297,9 +295,9 @@ LangString E_failed ${LANG_PORTUGUESEBR} "failed. Error code was:"
 LangString E_failed ${LANG_ITALIAN} "failed. Error code was:"
 LangString E_failed ${LANG_FRENCH} "a échoué. Erreur:"
 
-;-----------------------------------------------------------------------
+;=======================================================================
 ;Variables
-;-----------------------------------------------------------------------
+;=======================================================================
 
 Var /GLOBAL xc8_version                 ; Current XC8 version
 Var /GLOBAL xc8_path                    ; Path to the XC8 compiler
@@ -311,19 +309,24 @@ Var /GLOBAL dir                         ; Used by Install Macro
 Var /GLOBAL url                         ; Used by Download Macro
 Var /GLOBAL program                     ; Used by Install ans Download Macro
 
-;-----------------------------------------------------------------------
-;Delete a file
-;-----------------------------------------------------------------------
-
-;!macro Remove file
-;
-;    Delete "$EXEDIR\$file"
-;    DetailPrint "$file $(msg_deleted)"
-;
-;!macroend
+;=======================================================================
+;Functions
+;=======================================================================
 
 ;-----------------------------------------------------------------------
-;Start
+;Function Remove
+;Delete a given file
+;arg0: The file to delete
+;-----------------------------------------------------------------------
+
+!macro Remove file
+
+    Delete "$EXEDIR\$file"
+    DetailPrint "$file $(msg_deleted)"
+
+!macroend
+
+;-----------------------------------------------------------------------
 ;Fixed : AGentric reported that "" must be removed from xc8_path
 ;-----------------------------------------------------------------------
 
@@ -439,13 +442,19 @@ Section "Install"
     StrCmp $R2 "0" +2
     Call InstallGCC
 
-    ;Detect and install Python, Pip and Pip modules ......
+    ;Detect and install Python, Pip and Pip modules...
     Call InstallPython
     Call InstallPythonDep
 
+	;Install Visual C++ 2019 Redistributable...
+	Call InstallVisualCpp
+
     ;Get Pinguino last update
-    Call InstallGit
+    ;Call InstallGit
     Call InstallPinguino
+
+	; Keep context to 'all' in case was modified above...
+	SetShellVarContext all
 
     ;Install device drivers ?
     MessageBox MB_YESNO|MB_ICONQUESTION "$(Q_install_drivers)" IDNO NoDrivers
@@ -628,42 +637,55 @@ FunctionEnd
 
 ;-----------------------------------------------------------------------
 ; Python detection and installation routine.
+; See: https://nsis.sourceforge.io/Reference/ReadRegStr
+; See: https://nsis.sourceforge.io/Docs/Chapter4.html#basicinstructions
 ;-----------------------------------------------------------------------
 
 Function InstallPython
 
     ;Check Python's Install Path
-    ReadRegStr $0 HKLM "${REG_PYTHON}" ""
+	DetailPrint "Python registry key: HKLM/${REG_PYTHON}"
+    ReadRegStr $0 HKEY_CURRENT_USER "${REG_PYTHON}" "ExecutablePath"
     IfErrors 0 Done
 
     ;Download the Python installer
     DetailPrint "Python v${PYTHON_VERSION} $(msg_not_detected)"
 
     ${If} ${RunningX64}
-		${Download} "${URL_PYTHON}/${PYTHON_VERSION}" "python-${PYTHON_VERSION}.amd64.msi"
+		${Download} "${URL_PYTHON}/${PYTHON_VERSION}" "python-${PYTHON_VERSION}-amd64.exe"
+		ExecWait '"$EXEDIR\python-${PYTHON_VERSION}-amd64.exe"' $0
     ${Else}
-		${Download} "${URL_PYTHON}/${PYTHON_VERSION}" "python-${PYTHON_VERSION}.msi"
-    ${endif}
-
-    ;Install Python
-    ${If} ${RunningX64}
-		ExecWait '"msiexec" /i "$EXEDIR\python-${PYTHON_VERSION}.amd64.msi"' $0
-    ${Else}
-		ExecWait '"msiexec" /i "$EXEDIR\python-${PYTHON_VERSION}.msi"' $0
+		${Download} "${URL_PYTHON}/${PYTHON_VERSION}" "python-${PYTHON_VERSION}.exe"
+		ExecWait '"$EXEDIR\python-${PYTHON_VERSION}.exe"' $0
     ${endif}
 
     ${If} $0 != "0"
         Abort "Python v${PYTHON_VERSION} $(E_installing) $0!"
     ${endif}
-    ReadRegStr $0 HKLM "${REG_PYTHON}" ""
-    ;Remove $program
+    ReadRegStr $0 HKEY_CURRENT_USER "${REG_PYTHON}" ""
   
     Done:
-    DetailPrint "Python v${PYTHON_VERSION} path is $0"
+    DetailPrint "Python v${PYTHON_VERSION} @ $0"
     DetailPrint "Python v${PYTHON_VERSION} $(msg_installed)"
-    ;StrCpy $python_path $0
     ${StrTrim} $python_path $0
     
+FunctionEnd
+
+;-----------------------------------------------------------------------
+; Visual C++ 2019 Redistributable installation routine.
+; See: https://support.microsoft.com/es-es/help/2977003/the-latest-supported-visual-c-downloads
+;-----------------------------------------------------------------------
+
+Function InstallVisualCpp
+
+    ${If} ${RunningX64}
+		${Download} "${URL_VISUALCPP}" "vc_redist.x64.exe"
+		ExecWait '"$EXEDIR\vc_redist.x64.exe"' $0
+    ${Else}
+		${Download} "${URL_VISUALCPP}" "vc_redist.x86.exe"
+		ExecWait '"$EXEDIR\vc_redist.x86.exe"' $0
+    ${endif}
+
 FunctionEnd
 
 ;-----------------------------------------------------------------------
@@ -674,13 +696,22 @@ FunctionEnd
 
 Function InstallPythonDep
 
-    nsExec::Exec '"$python_path\python" -m pip install --upgrade --user pip'
-    nsExec::Exec '"$python_path\python" -m pip install --upgrade --user pyside2'
-    nsExec::Exec '"$python_path\python" -m pip install --upgrade --user pyusb'
-    nsExec::Exec '"$python_path\python" -m pip install --upgrade --user wheel'
-    nsExec::Exec '"$python_path\python" -m pip install --upgrade --user beautifulsoup4'
-    nsExec::Exec '"$python_path\python" -m pip install --upgrade --user setuptools'
-    nsExec::Exec '"$python_path\python" -m pip install --upgrade --user requests'
+    nsExec::Exec '"$python_path\python.exe" -m pip install --upgrade --user pip'
+    DetailPrint "Python pip $(msg_installed)"
+	nsExec::Exec '"$python_path\python.exe" -m pip install --upgrade pipenv'
+    DetailPrint "Python pipenv $(msg_installed)"
+    nsExec::Exec '"$python_path\python.exe" -m pip install --upgrade --user pyside2'
+    DetailPrint "Python pyside2 $(msg_installed)"
+    nsExec::Exec '"$python_path\python.exe" -m pip install --upgrade --user pyusb'
+    DetailPrint "Python pyusb $(msg_installed)"
+    nsExec::Exec '"$python_path\python.exe" -m pip install --upgrade --user wheel'
+    DetailPrint "Python wheel $(msg_installed)"
+    nsExec::Exec '"$python_path\python.exe" -m pip install --upgrade --user beautifulsoup4'
+    DetailPrint "Python beautifulsoup4 $(msg_installed)"
+    nsExec::Exec '"$python_path\python.exe" -m pip install --upgrade --user setuptools'
+    DetailPrint "Python setuptools $(msg_installed)"
+    nsExec::Exec '"$python_path\python.exe" -m pip install --upgrade --user requests'
+    DetailPrint "Python requests $(msg_installed)"
     Pop $0
     StrCmp $0 "0" Done
     Abort "Python dependencies $(E_installing) $0!"
@@ -688,7 +719,7 @@ Function InstallPythonDep
     Done:
     ;Remove Pinguino's Python package if installed before
     DetailPrint "Delete Pinguino's Python package if it exists ..."
-    nsExec::Exec '"$python_path\python" -m pip --yes uninstall pinguino' $0
+    nsExec::Exec '"$python_path\python.exe" -m pip --yes uninstall pinguino' $0
     DetailPrint "Python dependencies $(msg_installed)"
 
 FunctionEnd
@@ -709,15 +740,10 @@ Function InstallGit
 		DetailPrint "Git $(msg_not_detected)"
 		${If} ${RunningX64}
 			${Download} "${URL_GIT}/v${GIT_VERSION}.windows.1" "Git-${GIT_VERSION}-64-bit.exe"
+                        nsExec::Exec '"$EXEDIR\Git-${GIT_VERSION}-64-bit.exe"' $0
 		${Else}
 			${Download} "${URL_GIT}/v${GIT_VERSION}.windows.1" "Git-${GIT_VERSION}-32-bit.exe"
-		${endif}
-
-		;Run Git Installer
-		${If} ${RunningX64}
-			nsExec::Exec '"$EXEDIR\Git-${GIT_VERSION}-64-bit.exe"' $0
-		${Else}
-			nsExec::Exec '"$EXEDIR\Git-${GIT_VERSION}-32-bit.exe"' $0
+                        nsExec::Exec '"$EXEDIR\Git-${GIT_VERSION}-32-bit.exe"' $0
 		${endif}
 
 		${If} $0 != "0"
@@ -728,11 +754,9 @@ Function InstallGit
 		ReadRegStr $git_version HKLM "${REG_GIT}" "CurrentVersion"
 
 	${Endif}
-  
-	DetailPrint "Git v$git_version path is $git_path"
+
 	DetailPrint "Git v$git_version $(msg_installed)"
-    ;StrCpy $git_path $0
-    ;${StrTrim} $git_path $0
+        DetailPrint "Git v$git_version path is $git_path"
     
 FunctionEnd
 
@@ -742,29 +766,33 @@ FunctionEnd
 
 Function InstallPinguino
 
-	;Try to update the IDE
-	ExecWait '"$git_path\bin\git" "-C" "$INSTDIR/pinguino-ide" "pull"' $0
-    StrCmp $0 "0" Next
-	;No IDE detected, let's clone it
+    ;Download the IDE
     DetailPrint "Pinguino IDE $(E_updating) $0!"
-	ExecWait '"$git_path\bin\git" "clone" "https://github.com/PinguinoIDE/pinguino-ide.git" "$INSTDIR/pinguino-ide"' $0
+    ${Download} ${URL_GITHUB} pinguino-ide/archive/${pinguino-ide}
+	ClearErrors
+    nsisunz::UnzipToLog "$EXEDIR\${pinguino-ide}" "$EXEDIR"
     StrCmp $0 "0" Next
     Abort "Pinguino IDE $(E_installing) $0!"
 
-	Next:
-	;Try to update the Libraries
-	ExecWait '"$git_path\bin\git" "-C" "$INSTDIR/pinguino-libraries" "pull"' $0
-    StrCmp $0 "0" Done
-	;No Libraries detected, let's clone them
-    DetailPrint "Pinguino Libraries $(E_updating) $0!"
-	ExecWait '"$git_path\bin\git" "clone" "https://github.com/PinguinoIDE/pinguino-libraries.git" "$INSTDIR/pinguino-libraries"' $0
-    StrCmp $0 "0" Done
-    Abort "Pinguino Libraries $(E_installing) $0!"
+    Next:
+    ;Download the Libraries
+	DetailPrint "Pinguino Libraries $(E_updating) $0!"
+    ${Download} ${URL_GITHUB} pinguino-libraries/archive/${pinguino-libraries}
+	ClearErrors
+    nsisunz::UnzipToLog "$EXEDIR\${pinguino-libraries}" "$EXEDIR"
 
-	Done:
-	;Copy examples and sources folders in $user_path
-	CopyFiles "$INSTDIR\pinguino-libraries\examples\*.*" "$user_path\examples\"
-	CopyFiles "$INSTDIR\pinguino-libraries\source\*.*" "$user_path\source\"
+    ;ExecWait '"$git_path\bin\git" "-C" "$INSTDIR/pinguino-libraries" "pull"' $0
+    ;StrCmp $0 "0" Done
+    ;No Libraries detected, let's clone them
+    ;DetailPrint "Pinguino Libraries $(E_updating) $0!"
+    ;ExecWait '"$git_path\bin\git" "clone" "https://github.com/PinguinoIDE/pinguino-libraries.git" "$INSTDIR/pinguino-libraries"' $0
+    ;StrCmp $0 "0" Done
+    ;Abort "Pinguino Libraries $(E_installing) $0!"
+
+    Done:
+    ;Copy examples and sources folders in $user_path
+    CopyFiles "$INSTDIR\pinguino-libraries\examples\*.*" "$user_path\examples\"
+    CopyFiles "$INSTDIR\pinguino-libraries\source\*.*" "$user_path\source\"
     DetailPrint "Pinguino $(msg_installed)"
         
 FunctionEnd
