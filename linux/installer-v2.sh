@@ -8,7 +8,7 @@
 #   - Don't exec this script as root.
 #   - Don't use 'sudo'.
 #   - Require 'curl' or 'wget' commands.
-#   - Require 'python3' and 'pipenv' package.
+#   - Require 'python3', 'pip'  and 'pipenv' package.
 #
 # Thanks to the acme.sh project for their Bash Fu.
 #
@@ -191,10 +191,12 @@ _please_install(){
   _err "One or more dependencies are missing."
   _err "- -"
   _err "In Debian/Ubuntu based distros, type the following:"
-  _err "sudo apt install -y curl wget unzip python3"
+  _err "sudo apt install -y curl wget unzip python3 python3-pip"
+  _err "sudo pip3 install pipenv"
   _err "- -"
   _err "In RedHat/Centos/Fedora based distros, type the followign:"
   _err "sudo yum install -y curl wget unzip python3"
+  _err "sudo pip3 install pipenv"
   _err "- -"
   _err "Then, execute again this installer."
   _err "**********************************************************"
