@@ -152,6 +152,14 @@ _checkEnv() {
     exit 1
   fi
 
+  if [ -z "$_USE_SED" ] && _exists "sed"; then
+    _USE_SED="sed"
+  else
+    _err "sed not found."
+    _please_install
+    exit 1
+  fi
+
   if [ -z "$_USE_PYTHON3" ] && _exists "python3"; then
     _USE_PYTHON3="python3"
   else
@@ -191,11 +199,11 @@ _please_install(){
   _err "One or more dependencies are missing."
   _err "- -"
   _err "In Debian/Ubuntu based distros, type the following:"
-  _err "sudo apt install -y curl wget unzip python3 python3-pip"
+  _err "sudo apt install -y sed curl wget unzip python3 python3-pip"
   _err "sudo pip3 install pipenv"
   _err "- -"
   _err "In RedHat/Centos/Fedora based distros, type the followign:"
-  _err "sudo yum install -y curl wget unzip python3"
+  _err "sudo yum install -y sed curl wget unzip python3"
   _err "sudo pip3 install pipenv"
   _err "- -"
   _err "Then, execute again this installer."
@@ -410,6 +418,9 @@ _prepareUserDir() {
 
   # Fix error related to reserved.pickle file
   cp ${PINGUINO_DIR}/${IDE_DIR}/reserved.pickle ${USER_DIR}
+
+  # Create desktop icon
+  ${USE_SED} -i "s/#PINGUINO_DIR#/$PINGUINO_DIR\/$IDE_DIR" ${PINGUINO_DIR}/${IDE_DIR}/pinguino.desktop
 }
 
 _header() {
