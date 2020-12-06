@@ -420,7 +420,8 @@ _prepareUserDir() {
   cp ${PINGUINO_DIR}/${IDE_DIR}/reserved.pickle ${USER_DIR}
 
   # Create desktop icon
-  ${USE_SED} -i "s/#PINGUINO_DIR#/$PINGUINO_DIR\/$IDE_DIR" ${PINGUINO_DIR}/${IDE_DIR}/pinguino.desktop
+  ${USE_SED} -i "s|PINGUINO_DIR|$PINGUINO_DIR/$IDE_DIR|" ${PINGUINO_DIR}/${IDE_DIR}/pinguino.desktop
+  cp ${PINGUINO_DIR}/${IDE_DIR}/pinguino.desktop ${USER_DIR}/pinguino.desktop
 }
 
 _header() {
