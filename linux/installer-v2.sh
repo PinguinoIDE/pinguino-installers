@@ -421,7 +421,7 @@ _prepareUserDir() {
 
   # Create desktop icon
   echo "Exec=${PINGUINO_DIR}/${IDE_DIR}/pinguino.sh" >> ${PINGUINO_DIR}/${IDE_DIR}/pinguino.desktop
-  echo "Icon=${PINGUINO_DIR}/${IDE_DIR}/pinguino.svg" >> ${PINGUINO_DIR}/${IDE_DIR}/pinguino.desktop
+  echo "Icon=${PINGUINO_DIR}/${IDE_DIR}/logo.png" >> ${PINGUINO_DIR}/${IDE_DIR}/pinguino.desktop
   #${USE_SED} -i "s|PINGUINO_DIR|${PINGUINO_DIR}/${IDE_DIR}|" ${PINGUINO_DIR}/${IDE_DIR}/pinguino.desktop
   cp ${PINGUINO_DIR}/${IDE_DIR}/pinguino.desktop ${USER_DIR}/pinguino.desktop
 }
