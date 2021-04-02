@@ -400,7 +400,7 @@ _prepareUserDir() {
     echo gcc_bin  = ${PINGUINO_DIR}/${CMP_DIR}/p32/bin >> ${CONFIG_FILE}
     echo xc8_bin  = /opt/microchip/xc8/v${XC8_VERSION}/bin >> ${CONFIG_FILE}
     echo pinguino_8_libs = ${PINGUINO_DIR}/${LIB_DIR}/p8 >> ${CONFIG_FILE}
-    echo pinguino_32_libs = ${PINGUINODIR}/${LIB_DIR}/p32 >> ${CONFIG_FILE}
+    echo pinguino_32_libs = ${PINGUINO_DIR}/${LIB_DIR}/p32 >> ${CONFIG_FILE}
     echo install_path = ${PINGUINO_DIR}/${IDE_DIR} >> ${CONFIG_FILE}
     echo user_path = ${USER_DIR} >> ${CONFIG_FILE}
     echo user_libs = ${USER_DIR}/pinguinolibs >> ${CONFIG_FILE}
